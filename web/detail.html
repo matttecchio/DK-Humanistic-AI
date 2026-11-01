@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DK Barrel Lab</title>
+<style>
+:root{--bg:#0f1115;--panel:#181b21;--line:#2a2f38;--text:#e7e9ee;--dim:#98a0ad;--good:#4cc38a;--bad:#ef6a6a;--accent:#6ea8fe}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+h1{font-size:18px;margin:0}header span{color:var(--dim)}
+main{padding:16px 20px}@media(max-width:700px){main{padding:12px 16px}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:16px;min-width:0}
+h2{font-size:13px;margin:0 0 8px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:10px}
+.card{min-width:0}.card canvas{display:block;width:100%;aspect-ratio:224/256;background:#000;border-radius:4px;image-rendering:pixelated}
+.card p{margin:4px 0 0;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}@media(max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
+#watch{display:none}#screen{display:block;width:100%;max-width:448px;aspect-ratio:224/256;background:#000;image-rendering:pixelated;border-radius:4px}
+.hud{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;max-width:448px}.hud div{font-size:12px;color:var(--dim)}.hud b{display:block;font-size:16px;color:var(--text);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+button{background:#232833;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit;cursor:pointer}button:hover{border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}.stats div{color:var(--dim);font-size:12px}.stats b{display:block;font-size:20px;color:var(--text);font-variant-numeric:tabular-nums}
+.good{color:var(--good)!important}.bad{color:var(--bad)!important}
+.tw{overflow:auto;max-height:420px}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--dim);font-weight:500;position:sticky;top:0;background:var(--panel)}
+tr.click{cursor:pointer}tr.click:hover{background:#20242c}tr.sel{background:#232a38}
+.note{color:var(--dim);font-size:12px}select{background:#232833;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px}
+.key i{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 4px 0 10px;vertical-align:baseline}
+</style></head><body>
+<header><h1>DK Barrel Lab</h1><span>Level 1-1 · goal: 9,500+ in 20 of 21 games · human reactions 133–200 ms</span></header>
+<main>
+  <div class="panel"><h2>All games running now</h2>
+    <p class="note key" style="margin:0 0 8px" id="gridNote"></p>
+    <div class="grid" id="grid"></div></div>
+  <div class="panel" id="watch"><h2 id="watchTitle">Watching</h2>
+    <img id="screen" alt="The real game screen">
+    <div class="hud"><div>Score<b id="hScore">–</b></div><div>Timer<b id="hTimer">–</b></div><div>Floor<b id="hFloor">–</b></div><div>Reaction<b id="hDelay">–</b></div></div>
+    <div class="row"><button id="close">Close</button><span class="note" id="status"></span></div></div>
+  <div class="panel"><h2>Batch</h2>
+    <div class="row" style="margin:0 0 10px"><select id="batch" aria-label="Choose a batch"></select><button id="live">Watch one live game at normal speed</button><span class="note" id="meta"></span></div>
+    <div class="stats" id="stats"></div></div>
+  <div class="two">
+    <div class="panel"><h2>Why games failed</h2><div class="tw"><table id="causes"></table></div></div>
+    <div class="panel"><h2>Games (click to replay at normal speed)</h2>
+      <div class="row" style="margin:0 0 8px"><button data-f="fail">Failures</button><button data-f="clear">Clears</button><button data-f="all">All</button></div>
+      <div class="tw"><table id="games"></table></div></div>
+  </div>
+  <div class="panel"><h2>All batches</h2><div class="tw" style="max-height:240px"><table id="all"></table></div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id),fmt=n=>Number(n).toLocaleString(),p=x=>(100*x).toFixed(1)+'%';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const bg=new Image();bg.src='/bg.png';
+const DX=-15.5,DY=0;
+// Sprites: each letter is a palette colour, '.' is see-through
+const PAL={r:'#e5392b',b:'#2f52e0',s:'#ffc68c',k:'#6b3a12',w:'#ffffff',o:'#e8862a',d:'#8a4a14',l:'#4fb4ff',n:'#1c3fb0',m:'#ff3dd2',y:'#ffe14d',f:'#ff7a1a',g:'#c8c8c8'};
+const SPR={
+ mario:['...rrrrr....','..rrrrrrrr..','..kkksskk...','.kskssskss..','.kskkssskss.','.kkssssskkk.','...sssssss..','..rrbrrr....','.rrrbrrbrrr.','rrrrbbbbrrrr','ssrbbybbybss','sssbbbbbbsss','ssbbbbbbbbss','..bbb..bbb..','.kkk....kkk.','kkkk....kkkk'],
+ hammer:['.gggggg.','.gggggg.','.gggggg.','...kk...','...kk...','...kk...'],
+ barrel:['...oooo...','.oodddooo.','.oooooooo.','odddddddoo','oooooooooo','oooooooooo','odddddddoo','.oooooooo.','.oodddooo.','...oooo...'],
+ blue:['...llll...','.llnnnlll.','.llllllll.','lnnnnnnnll','llllllllll','llllllllll','lnnnnnnnll','.llllllll.','.llnnnlll.','...llll...'],
+ wild:['m..oooo..m','.mmdddomm.','.ommooomo.','oddmmddoo.','oooommoooo','oooommoooo','oddmmddoo.','.ommooomo.','.mmdddomm.','m..oooo..m'],
+ wildblue:['m..llll..m','.mmnnnlmm.','.lmmllmml.','lnnmmnnll.','llllmmllll','llllmmllll','lnnmmnnll.','.lmmllmml.','.mmnnnlmm.','m..llll..m'],
+ fire:['....f.....','...ff.f...','..fyf.ff..','..fyyffy..','.ffyyyyff.','.fyywwyyf.','.fywwwwyf.','..fywwyf..','...ffff...','..........'],
+};
+function draw(x,name,cx,cy,flip){const s=SPR[name],h=s.length,w=s[0].length,ox=Math.round(cx-w/2),oy=Math.round(cy-h/2);
+  for(let j=0;j<h;j++)for(let i=0;i<w;i++){const c=s[j][flip?w-1-i:i];if(c!=='.'){x.fillStyle=PAL[c];x.fillRect(ox+i,oy+j,1,1)}}}
+function legend(){const items=[['mario','Mario'],['barrel','Barrel'],['blue','Blue barrel'],['wild','Wild barrel'],['fire','Fireball']];
+  const el=$('gridNote');el.textContent='Games run at full test speed, so this shows up to 60 snapshots a second.';
+  for(const [n,label] of items){const c=document.createElement('canvas');const h=SPR[n].length,w=SPR[n][0].length;c.width=w;c.height=h;c.style.cssText=`height:${h*1.25}px;margin:0 4px 0 12px;vertical-align:middle;image-rendering:pixelated`;draw(c.getContext('2d'),n,w/2,h/2);el.append(c,label)}}
+legend();
+const faces={};
+let batches=[],games=[],filter='fail',sel=null,watching=false;
+function card(w){let c=document.getElementById('c'+w);if(c)return c;c=document.createElement('div');c.className='card';c.id='c'+w;c.innerHTML='<canvas width="224" height="256" aria-label="Game board"></canvas><p></p>';$('grid').appendChild(c);return c}
+async function grid(){let d=[];try{d=await (await fetch('/api/grid')).json()}catch(e){}
+  if(!d.length){$('grid').innerHTML='<p class="note">No batch is running right now.</p>';return}
+  if($('grid').querySelector('p.note:only-child'))$('grid').innerHTML='';
+  const live=new Set(d.map(g=>g.w));[...$('grid').children].forEach(e=>{if(!live.has(+e.id.slice(1)))e.remove()});
+  for(const g of d){const c=card(g.w),x=c.querySelector('canvas').getContext('2d');x.imageSmoothingEnabled=false;
+    if(bg.complete&&bg.naturalWidth)x.drawImage(bg,0,0);else{x.fillStyle='#000';x.fillRect(0,0,224,256)}
+    for(const [a,b,blue,wild] of g.b)draw(x,wild?(blue?'wildblue':'wild'):(blue?'blue':'barrel'),a+DX,b+DY);
+    for(const [a,b] of g.f)draw(x,'fire',a+DX,b+DY-1);
+    const prev=faces[g.w];if(prev&&g.x!==prev.x)prev.flip=g.x<prev.x;faces[g.w]={x:g.x,flip:prev?prev.flip:false};
+    draw(x,'mario',g.x+DX,g.y+DY,faces[g.w].flip);if(g.ham)draw(x,'hammer',g.x+DX+(faces[g.w].flip?-9:9),g.y+DY-8);
+    c.querySelector('p').textContent=`Game ${g.id} · ${fmt(g.score)} pts · floor ${g.floor} · ${g.cleared}/${g.played} cleared`}}
+function nextFrame(){if(!watching)return;const i=new Image();i.onload=()=>{$('screen').src=i.src;setTimeout(nextFrame,33)};i.onerror=()=>setTimeout(nextFrame,300);i.src='/frame.png?'+Date.now()}
+async function state(){if(!watching)return;try{const s=await (await fetch('/api/state')).json();
+  $('hScore').textContent=s.score!=null?fmt(s.score):'–';$('hTimer').textContent=s.timer!=null?fmt(s.timer):'–';$('hFloor').textContent=s.floor??'–';$('hDelay').textContent=s.delay!=null?s.delay+' ms':'–';
+  $('watchTitle').textContent=s.watching==='replay'?'Replay of game '+s.id:'Live game'+(s.id?' '+s.id:'');$('status').textContent=s.running?'':'Finished.'}catch(e){}}
+function open(url){watching=true;$('watch').style.display='block';fetch(url);nextFrame();$('watch').scrollIntoView({behavior:'smooth'})}
+$('close').onclick=()=>{watching=false;$('watch').style.display='none';fetch('/api/stop')};
+function drawStats(b){const pass=b.goal_rate_low>=b.goal_target;
+  $('meta').textContent=(b.note?b.note+' · ':'')+fmt(b.games)+' games'+(b.seconds?' in '+Math.round(b.seconds)+'s':' (running)');
+  $('stats').innerHTML=[['Clear rate',p(b.clear_rate),b.clear_rate>=.95?'good':'bad'],['At least (95% conf.)',p(b.clear_rate_low),''],['Hit 9,500+',p(b.goal_rate),pass?'good':'bad'],['Goal',p(b.goal_target),''],['Median clear',fmt(b.score_median),''],['10th pct clear',fmt(b.score_p10),''],['Best',fmt(b.score_max),''],['Distinct games',fmt(b.variety),'']].map(([k,v,c])=>`<div>${esc(k)}<b class="${c}">${esc(v)}</b></div>`).join('');
+  $('causes').innerHTML='<tr><th>Games</th><th>Reason</th></tr>'+(b.causes.length?b.causes.map(([k,v])=>`<tr><td>${fmt(v)}</td><td>${esc(k)}</td></tr>`).join(''):'<tr><td colspan=2>No failures</td></tr>')}
+function drawGames(){const rows=games.filter(g=>filter==='all'||(filter==='clear')===(g.outcome==='clear')).slice(0,400);
+  $('games').innerHTML='<tr><th>Game</th><th>Result</th><th>Score</th><th>Floor</th><th>Secs</th><th>Reason</th></tr>'+rows.map(g=>`<tr class="click${sel===g.id?' sel':''}" data-id="${g.id}"><td>${g.id}</td><td class="${g.outcome==='clear'?'good':'bad'}">${esc(g.outcome)}</td><td>${fmt(g.score)}</td><td>${g.floor}</td><td>${(g.frames/60).toFixed(0)}</td><td>${g.outcome==='clear'?'':esc(g.cause+' while '+g.doing)}</td></tr>`).join('')}
+async function loadBatch(){const name=$('batch').value,b=batches.find(x=>x.name===name);if(!b)return;drawStats(b);games=await (await fetch('/api/games?batch='+encodeURIComponent(name))).json();drawGames()}
+async function refresh(){batches=await (await fetch('/api/batches')).json();const cur=$('batch').value;
+  $('batch').innerHTML=batches.map(b=>`<option value="${esc(b.name)}">${esc(b.name)}</option>`).join('');if(cur&&batches.some(b=>b.name===cur))$('batch').value=cur;
+  $('all').innerHTML='<tr><th>Batch</th><th>Games</th><th>Clear</th><th>9,500+</th><th>Median</th><th>Note</th></tr>'+batches.map(b=>`<tr><td>${esc(b.name)}</td><td>${fmt(b.games)}</td><td>${p(b.clear_rate)}</td><td>${p(b.goal_rate)}</td><td>${fmt(b.score_median)}</td><td>${esc(b.note||'')}</td></tr>`).join('');await loadBatch()}
+$('batch').onchange=loadBatch;$('live').onclick=()=>open('/api/watch');
+document.querySelectorAll('[data-f]').forEach(x=>x.onclick=()=>{filter=x.dataset.f;drawGames()});
+$('games').onclick=e=>{const t=e.target.closest('tr[data-id]');if(!t)return;sel=+t.dataset.id;open('/api/watch?batch='+encodeURIComponent($('batch').value)+'&id='+sel);drawGames()};
+let busy=false;(function tick(){if(busy){requestAnimationFrame(tick);return}busy=true;grid().finally(()=>{busy=false;requestAnimationFrame(tick)})})();setInterval(state,300);refresh();setInterval(refresh,10000);
+</script></body></html>

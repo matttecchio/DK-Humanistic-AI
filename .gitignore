@@ -1,0 +1,7 @@
+# test output, which can get large
+runs/
+# game start states, made from your own ROM by tools/make_starts.py
+starts/
+__pycache__/
+*.pyc
+.DS_Store
