@@ -28,10 +28,10 @@ ul{list-style:none;margin:0;padding:0}li{display:flex;gap:8px;justify-content:sp
 </style></head><body><div class="stage">
 <div class="side" id="left"></div>
 <div class="mid">
-  <div><h1>DK Barrel Lab</h1><p class="sub">Level 1-1 AI · human reactions (133–167 ms)</p></div>
-  <div class="panel hero"><b id="clear">–</b><span>of games cleared the board</span>
+  <div><h1>DK Barrel Lab</h1><p class="sub"><span id="lvl">Level 5-1</span> AI · human reactions (133–150 ms)</p></div>
+  <div class="panel hero"><b id="clear">–</b><span>of games cleared, not counting fireball deaths</span>
     <div class="bar" aria-hidden="true"><i id="clearBar" style="width:0"></i><em style="left:95.2%"></em></div>
-    <span id="goalTxt">Goal: 95.2% at 9,500+</span></div>
+    <span id="goalTxt">Goal: 95.2% at 9,500+</span><br><span id="fireTxt"></span></div>
   <div class="panel"><h2>All time</h2><div class="stats" id="ever"></div></div>
   <div class="panel"><h2>Now testing</h2><div class="stats" id="stats"></div></div>
   <div class="panel"><h2>What's happening</h2><ul id="status" class="say"></ul></div>
@@ -65,6 +65,9 @@ function score(x,n){x.fillStyle='#000';x.fillRect(8,8,48,8);x.fillRect(88,8,48,8
   const t=String(n).padStart(6,'0');for(let i=0;i<6;i++){const r=DIG[t[i]];for(let j=0;j<8;j++)for(let k=0;k<8;k++)if(r[j][k]==='#')x.fillRect(88+8*i+k,8+j,1,1)}}
 function bonus(x,n){x.fillStyle='#000';x.fillRect(176,48,32,8);x.fillStyle=n<=800?'#ec3194':'#14f3ff';
   const t=(n?String(n):'000').padStart(4,' ');for(let i=0;i<4;i++){const r=DIG[t[i]];if(!r)continue;for(let j=0;j<8;j++)for(let k=0;k<8;k++)if(r[j][k]==='#')x.fillRect(176+8*i+k,48+j,1,1)}}
+// L=01 is part of the empty board picture, so the level is drawn over it
+function levelNo(x,n){x.fillStyle='#000';x.fillRect(184,24,16,8);x.fillStyle='#0402dc';
+  const t=String(n).padStart(2,'0');for(let i=0;i<2;i++){const r=DIG[t[i]];for(let j=0;j<8;j++)for(let k=0;k<8;k++)if(r[j][k]==='#')x.fillRect(184+8*i+k,24+j,1,1)}}
 const faces={};
 for(const [n,label] of [['mario','Mario'],['barrel','Barrel'],['blue','Blue'],['wild','Wild'],['fire','Fire']]){const c=document.createElement('canvas'),h=SPR[n].length,w=SPR[n][0].length;c.width=w;c.height=h;draw(c.getContext('2d'),n,w/2,h/2);const s=document.createElement('span');s.append(c,label);$('key').append(s)}
 // four boards a side, always in the same seats
@@ -72,14 +75,14 @@ for(let w=0;w<8;w++){const d=document.createElement('div');d.className='card';d.
 function paint(c,g){const x=c.querySelector('canvas').getContext('2d');x.imageSmoothingEnabled=false;
   if(bg.complete&&bg.naturalWidth)x.drawImage(bg,0,0);else{x.fillStyle='#000';x.fillRect(0,0,224,256)}
   if(!g)return;
-  score(x,g.score);bonus(x,g.timer);
+  score(x,g.score);bonus(x,g.timer);levelNo(x,g.level||1);
   for(const [a,b,blue,wild] of g.b)draw(x,wild?(blue?'wildblue':'wild'):(blue?'blue':'barrel'),a+DX,b-1);
   for(const [a,b] of g.f)draw(x,'fire',a+DX,b+1);
   const prev=faces[g.w];if(prev&&g.x!==prev.x)prev.flip=g.x<prev.x;faces[g.w]={x:g.x,flip:prev?prev.flip:false};
   draw(x,'mario',g.x+DX,g.y+DY,faces[g.w].flip);if(g.ham)draw(x,'hammer',g.x+DX+(faces[g.w].flip?-9:9),g.y+DY-8)}
 bg.onload=()=>{for(let w=0;w<8;w++)paint($('c'+w),null)};
 async function grid(){let d=[];try{d=await (await fetch('/api/grid')).json()}catch(e){}
-  const by={};for(const g of d)by[g.w]=g;
+  const by={};for(const g of d)by[g.w]=g;if(d[0])$('lvl').textContent=`Level ${d[0].level||1}-1`;
   for(let w=0;w<8;w++){const c=$('c'+w),g=by[w];
     if(g){paint(c,g);c.querySelector('p').textContent=`Game ${g.id} · floor ${g.floor}`}
     else if(c.dataset.on){paint(c,null);c.querySelector('p').textContent='Waiting for a batch'}
@@ -89,12 +92,16 @@ async function stats(){let all=[];try{all=await (await fetch('/api/batches')).js
   const b=all[0];if(!b)return;
   $('clear').textContent=p(b.clear_rate);$('clear').className=b.clear_rate>=b.goal_target?'good':'';$('clearBar').style.width=Math.min(100,100*b.clear_rate)+'%';
   $('goalTxt').textContent=`Goal: ${p(b.goal_target)} at 9,500+ · now ${p(b.goal_rate)}`;
+  $('fireTxt').textContent=`Fireball deaths: ${p(b.games?b.fireball_deaths/b.games:0)} of games (${fmt(b.fireball_deaths)})`;
   $('stats').innerHTML=[['Games in this test',fmt(b.games)],['Boards cleared',fmt(b.clears)],['Median clear score',fmt(b.score_median)],['Best clear',fmt(b.score_max)]].map(([k,v])=>`<div>${esc(k)}<b>${esc(v)}</b></div>`).join('');
   $('causes').innerHTML=(b.causes.length?b.causes:[['No failures',0]]).slice(0,6).map(([k,v])=>`<li><span>${esc(k.replace('died: ','').replace('fall_or_unknown','fall'))}</span><span>${v?p(v/b.games):''}</span></li>`).join('');
   $('hist').innerHTML=all.slice(0,2).map(x=>`<li><span>${esc(x.note||x.name)}</span><span>${p(x.clear_rate)}</span></li>`).join('')}
 async function status(){try{const s=await (await fetch('/api/status')).json();
   $('status').innerHTML=s.slice(-3).reverse().map(x=>`<li>${esc(x.text)}</li>`).join('')||'<li>Waiting for the next step</li>'}catch(e){}}
 status();setInterval(status,3000);
+// reloads itself when the page changes, so a stream never needs refreshing by hand
+let version;async function checkVersion(){try{const v=await (await fetch('/api/version')).json();if(version&&v!==version)location.reload();version=v}catch(e){}}
+checkVersion();setInterval(checkVersion,10000);
 async function ever(){try{const t=await (await fetch('/api/totals')).json();
   $('ever').innerHTML=[['Total games played',fmt(t.games)],['Total boards cleared',fmt(t.clears)]].map(([k,v])=>`<div>${esc(k)}<b>${esc(v)}</b></div>`).join('')}catch(e){}}
 ever();setInterval(ever,4000);

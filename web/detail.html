@@ -24,7 +24,7 @@ tr.click{cursor:pointer}tr.click:hover{background:#20242c}tr.sel{background:#232
 .note{color:var(--dim);font-size:12px}select{background:#232833;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px}
 .key i{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 4px 0 10px;vertical-align:baseline}
 </style></head><body>
-<header><h1>DK Barrel Lab</h1><span>Level 1-1 · goal: 9,500+ in 20 of 21 games · human reactions 133–200 ms</span></header>
+<header><h1>DK Barrel Lab</h1><span><span id="lvl">Level 5-1</span> · goal: 9,500+ in 20 of 21 games · human reactions 133–200 ms</span></header>
 <main>
   <div class="panel"><h2>All games running now</h2>
     <p class="note key" style="margin:0 0 8px" id="gridNote"></p>
@@ -67,10 +67,23 @@ function legend(){const items=[['mario','Mario'],['barrel','Barrel'],['blue','Bl
   for(const [n,label] of items){const c=document.createElement('canvas');const h=SPR[n].length,w=SPR[n][0].length;c.width=w;c.height=h;c.style.cssText=`height:${h*1.25}px;margin:0 4px 0 12px;vertical-align:middle;image-rendering:pixelated`;draw(c.getContext('2d'),n,w/2,h/2);el.append(c,label)}}
 legend();
 const faces={};
+const DIG={"0":["...###..","..#..##.",".##...##",".##...##",".##...##","..##..#.","...###..","........"],"1":["....##..","...###..","....##..","....##..","....##..","....##..","..######","........"],"2":["..#####.",".##...##",".....###","...####.","..####..",".###....",".#######","........"],"3":["..######",".....##.","....##..","...####.","......##",".##...##","..#####.","........"],"4":["....###.","...####.","..##.##.",".##..##.",".#######",".....##.",".....##.","........"],"5":[".######.",".##.....",".######.","......##","......##",".##...##","..#####.","........"],"6":["...####.","..##....",".##.....",".######.",".##...##",".##...##","..#####.","........"],"7":[".#######",".##...##",".....##.","....##..","...##...","...##...","...##...","........"],"8":["..####..",".##...#.",".###..#.","..####..",".#..####",".#....##","..#####.","........"],"9":["..#####.",".##...##",".##...##","..######","......##",".....##.","..####..","........"]},DIGC='#fefcff';
+function score(x,n){x.fillStyle='#000';x.fillRect(8,8,48,8);x.fillRect(88,8,48,8);x.fillStyle=DIGC;
+  const t=String(n).padStart(6,'0');for(let i=0;i<6;i++){const r=DIG[t[i]];for(let j=0;j<8;j++)for(let k=0;k<8;k++)if(r[j][k]==='#')x.fillRect(88+8*i+k,8+j,1,1)}}
+function bonus(x,n){x.fillStyle='#000';x.fillRect(176,48,32,8);x.fillStyle=n<=800?'#ec3194':'#14f3ff';
+  const t=(n?String(n):'000').padStart(4,' ');for(let i=0;i<4;i++){const r=DIG[t[i]];if(!r)continue;for(let j=0;j<8;j++)for(let k=0;k<8;k++)if(r[j][k]==='#')x.fillRect(176+8*i+k,48+j,1,1)}}
+// L=01 is part of the empty board picture, so the level is drawn over it
+function levelNo(x,n){x.fillStyle='#000';x.fillRect(184,24,16,8);x.fillStyle='#0402dc';
+  const t=String(n).padStart(2,'0');for(let i=0;i<2;i++){const r=DIG[t[i]];for(let j=0;j<8;j++)for(let k=0;k<8;k++)if(r[j][k]==='#')x.fillRect(184+8*i+k,24+j,1,1)}}
+const faces={};
+// L=01 is part of the empty board picture, so the level is drawn over it
+function levelNo(x,n){x.fillStyle='#000';x.fillRect(184,24,16,8);x.fillStyle='#0402dc';
+  const t=String(n).padStart(2,'0');for(let i=0;i<2;i++){const r=DIG[t[i]];for(let j=0;j<8;j++)for(let k=0;k<8;k++)if(r[j][k]==='#')x.fillRect(184+8*i+k,24+j,1,1)}}
 let batches=[],games=[],filter='fail',sel=null,watching=false;
 function card(w){let c=document.getElementById('c'+w);if(c)return c;c=document.createElement('div');c.className='card';c.id='c'+w;c.innerHTML='<canvas width="224" height="256" aria-label="Game board"></canvas><p></p>';$('grid').appendChild(c);return c}
 async function grid(){let d=[];try{d=await (await fetch('/api/grid')).json()}catch(e){}
   if(!d.length){$('grid').innerHTML='<p class="note">No batch is running right now.</p>';return}
+  $('lvl').textContent=`Level ${d[0].level||1}-1`;
   if($('grid').querySelector('p.note:only-child'))$('grid').innerHTML='';
   const live=new Set(d.map(g=>g.w));[...$('grid').children].forEach(e=>{if(!live.has(+e.id.slice(1)))e.remove()});
   for(const g of d){const c=card(g.w),x=c.querySelector('canvas').getContext('2d');x.imageSmoothingEnabled=false;
@@ -79,6 +92,7 @@ async function grid(){let d=[];try{d=await (await fetch('/api/grid')).json()}cat
     for(const [a,b] of g.f)draw(x,'fire',a+DX,b+DY-1);
     const prev=faces[g.w];if(prev&&g.x!==prev.x)prev.flip=g.x<prev.x;faces[g.w]={x:g.x,flip:prev?prev.flip:false};
     draw(x,'mario',g.x+DX,g.y+DY,faces[g.w].flip);if(g.ham)draw(x,'hammer',g.x+DX+(faces[g.w].flip?-9:9),g.y+DY-8);
+    levelNo(x,g.level||1);
     c.querySelector('p').textContent=`Game ${g.id} · ${fmt(g.score)} pts · floor ${g.floor} · ${g.cleared}/${g.played} cleared`}}
 function nextFrame(){if(!watching)return;const i=new Image();i.onload=()=>{$('screen').src=i.src;setTimeout(nextFrame,33)};i.onerror=()=>setTimeout(nextFrame,300);i.src='/frame.png?'+Date.now()}
 async function state(){if(!watching)return;try{const s=await (await fetch('/api/state')).json();

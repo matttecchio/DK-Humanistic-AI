@@ -1,0 +1,23 @@
+-- remembered situations (tools/deep_solve.py kj01): each move cleared 80%+ of 30 tries
+return {
+  {src = 8803518, fl = 5, x = 94, ham = 0, b = {{28, 1, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 48},
+  {src = 8803740, fl = 5, x = 82, ham = 0, b = {{25, -8, 0, 0}}, plan = {a = 1, w = 16, j1 = 0, j2 = nil, h = 1}, ok = 0.90, early = 102},
+  {src = 8805404, fl = 5, x = 89, ham = 0, b = {{18, -3, 0, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 54},
+  {src = 8805470, fl = 5, x = 84, ham = 0, b = {{23, 2, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 90},
+  {src = 8807038, fl = 5, x = 80, ham = 0, b = {{17, -31, 2, 0}, {22, 2, 4, 0}, {59, 0, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 0.83, early = 48},
+  {src = 8807514, fl = 5, x = 86, ham = 0, b = {{21, -3, 0, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 0.87, early = 96},
+  {src = 8807744, fl = 5, x = 83, ham = 0, b = {{24, 2, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 0.93, early = 90},
+  {src = 8807800, fl = 5, x = 83, ham = 0, b = {{23, 2, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 90},
+  {src = 8810246, fl = 5, x = 97, ham = 0, b = {{27, 2, 4, 0}, {48, -30, 2, 0}, {64, -1, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 54},
+  {src = 8812762, fl = 5, x = 82, ham = 0, b = {{25, -3, 0, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 96},
+  {src = 8815766, fl = 5, x = 106, ham = 0, b = {{37, -30, 2, 0}, {47, 0, 4, 0}}, plan = {a = 1, w = 10, j1 = nil, j2 = nil, h = nil}, ok = 0.90, early = 102},
+  {src = 8817410, fl = 5, x = 107, ham = 0, b = {{32, 1, 4, 0}, {50, -30, 2, 0}}, plan = {a = 1, w = 10, j1 = nil, j2 = nil, h = nil}, ok = 0.90, early = 102},
+  {src = 8818532, fl = 5, x = 97, ham = 0, b = {{27, 2, 4, 0}, {64, -1, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 0.80, early = 51},
+  {src = 8821418, fl = 5, x = 87, ham = 0, b = {{20, -3, 0, 0}}, plan = {a = 0, w = 8, j1 = 0, j2 = nil, h = 1}, ok = 0.93, early = 108},
+  {src = 8823038, fl = 5, x = 83, ham = 1, b = {{-16, -20, 0, 1}}, plan = {a = 2, w = 16, j1 = 2, j2 = nil, h = 2}, ok = 0.87, early = 264},
+  {src = 8823122, fl = 5, x = 86, ham = 0, b = {{21, -3, 0, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 0.83, early = 96},
+  {src = 8823146, fl = 5, x = 93, ham = 0, b = {{21, -31, 2, 0}, {28, 1, 4, 0}}, plan = {a = 2, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 48},
+  {src = 8823306, fl = 4, x = 97, ham = 0, b = {{63, 7, 2, 0}}, plan = {a = 2, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 0.93, early = 84},
+  {src = 8824102, fl = 5, x = 83, ham = 0, b = {{23, 2, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 90},
+  {src = 8827718, fl = 5, x = 82, ham = 0, b = {{24, 2, 4, 0}}, plan = {a = 1, w = 4, j1 = nil, j2 = nil, h = nil}, ok = 1.00, early = 90},
+}

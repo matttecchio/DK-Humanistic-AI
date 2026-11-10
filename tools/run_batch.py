@@ -18,7 +18,7 @@ def log_result(a, s, stalled):
     note = (a.note or "") + (" (STALLED)" if stalled else "")
     with open(path, "a") as f:
         f.write(f"| {time.strftime('%Y-%m-%d %H:%M')} | {a.name} | {note} | {', '.join(a.set)} | {a.first} | {s['games']:,} | "
-                f"{s['clear_rate']:.1%} | {s['clear_rate_low']:.1%} | {s['goal_rate']:.1%} | {s['score_median']:,} |\n")
+                f"{s['clear_rate']:.1%} ({s['clear_rate_all']:.1%} with fireballs) | {s['clear_rate_low']:.1%} | {s['goal_rate']:.1%} | {s['score_median']:,} |\n")
 
 
 def say(text):
@@ -33,8 +33,10 @@ def main():
     ap.add_argument("--note", default="")
     ap.add_argument("--first", type=int, default=0, help="first game number, for testing on a fresh set of games")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE", help="override a rule for this batch only (Lua value)")
+    ap.add_argument("--level", type=int, default=1, help="level whose first barrel board to play (needs make_starts.py --level N)")
     ap.add_argument("--no-inputs", action="store_true", help="don't save each game's inputs (uses far less disk, but those games can't be replayed)")
     ap.add_argument("--no-grid", action="store_true", help="don't publish positions for the website")
+    ap.add_argument("--native", action="store_true", help="play on dkx (native/build/dkh) instead of MAME: the same games, input for input, about 5x faster")
     a = ap.parse_args()
     d = f"{H}/runs/{a.name}"
     if os.path.exists(d):
@@ -44,9 +46,9 @@ def main():
     shutil.copytree(f"{H}/lua", f"{d}/lua")
     if a.set:
         os.rename(f"{d}/lua/params.lua", f"{d}/lua/params_base.lua")
-        lines = [f'local p = dofile("{d}/lua/params_base.lua")'] + [f"p.{kv.split('=', 1)[0]} = {kv.split('=', 1)[1]}" for kv in a.set] + ["return p"]
+        lines = [f'local p = dofile("{d}/lua/params_base.lua")'] + [f"for _, l in pairs(p.levels or {{}}) do l.{kv.split('=', 1)[0]} = nil end\np.{kv.split('=', 1)[0]} = {kv.split('=', 1)[1]}" for kv in a.set] + ["return p"]   # a setting for this batch beats the level's own
         open(f"{d}/lua/params.lua", "w").write("\n".join(lines) + "\n")
-    json.dump({"name": a.name, "games": a.games, "workers": a.workers, "note": a.note, "started": time.time()}, open(f"{d}/meta.json", "w"))
+    json.dump({"name": a.name, "games": a.games, "workers": a.workers, "note": a.note, "level": a.level, "native": a.native, "started": time.time()}, open(f"{d}/meta.json", "w"))
     stats.ensure_ram()
     GRID = stats.grid_dir()
     shutil.rmtree(GRID, ignore_errors=True)
@@ -55,13 +57,18 @@ def main():
     procs = []
     for w in range(a.workers):
         env = dict(os.environ, DKH=H, MODE="batch", START_ID=str(a.first + w), STEP=str(a.workers), LAST=str(a.first + a.games - 1), OUT=f"{d}/games_{w}.jsonl",
-                   PARAMS=f"{d}/lua/params.lua", WORKER=str(w))
+                   PARAMS=f"{d}/lua/params.lua", WORKER=str(w), LEVEL=str(a.level), START_PREFIX="s" if a.level == 1 else f"l{a.level}_")
         if a.no_inputs:
             env["NO_INPUTS"] = "1"
         if not a.no_grid:
             env["GRID"] = GRID
-        procs.append(subprocess.Popen([f"{H}/tools/mame.sh", "-nothrottle", "-numprocessors", "1", "-samplerate", "1000", "-state_directory", f"{H}/starts",
-                                       "-autoboot_script", f"{H}/lua/agent.lua"], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
+        if a.native:
+            env.update(DKX_ROMS=os.path.expanduser("~/dkx-build/DK-x86-AI/dkx/roms"), DKH_STATES=f"{H}/native/starts")
+            cmd = [f"{H}/native/build/dkh", f"{H}/lua/agent.lua"]
+        else:
+            cmd = [f"{H}/tools/mame.sh", "-nothrottle", "-numprocessors", "1", "-samplerate", "1000", "-state_directory", f"{H}/starts",
+                   "-autoboot_script", f"{H}/lua/agent.lua"]
+        procs.append(subprocess.Popen(cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
     t0 = time.time()
     stalled = False
     last_size, last_change = -1, time.time()
@@ -86,10 +93,10 @@ def main():
     json.dump(meta, open(f"{d}/meta.json", "w"))
     s = stats.summary(games)
     stats.totals()              # count it now, in case the batch gets deleted later
-    say(f"Result: {a.note or a.name} cleared {s['clear_rate']:.1%} of {s['games']:,} games")
+    say(f"Result: {a.note or a.name} survived {s['clear_rate']:.1%} of {s['games']:,} games, not counting {s['fireball_deaths']} fireball deaths")
     log_result(a, s, stalled)
     print(f"{a.name}: {s['games']} games in {el:.0f}s ({s['games'] / max(el, 1):.1f}/s)")
-    print(f"clear {s['clears']}/{s['games']} = {s['clear_rate']:.1%}; goal {s['goal_rate']:.1%}; median clear score {s['score_median']}, best {s['score_max']}; distinct games {s['variety']}")
+    print(f"clear {s['clear_rate']:.1%} without fireball deaths ({s['fireball_deaths']}), {s['clear_rate_all']:.1%} with; goal {s['goal_rate']:.1%}; median clear score {s['score_median']}, best {s['score_max']}; distinct games {s['variety']}")
     print("reached floor:", s["floors"])
     for k, v in s["causes"]:
         print(f"  {v:5d}  {k}")

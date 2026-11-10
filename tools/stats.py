@@ -27,6 +27,13 @@ def ensure_ram():
         pass                    # positions just go to disk instead
 
 
+def use_starts(name):
+    """Makes replays of this batch load the starts it was played from."""
+    level = json.load(open(os.path.join(RUNS, name, "meta.json"))).get("level", 1)
+    os.environ["START_PREFIX"] = "s" if level == 1 else f"l{level}_"
+    os.environ["LEVEL"] = str(level)
+
+
 def load(name, inputs=False):
     games = []
     for path in glob.glob(os.path.join(RUNS, name, "games_*.jsonl")):
@@ -84,8 +91,11 @@ def pct(values, q):
 
 
 def summary(games):
-    n = len(games)
+    total = len(games)
     clears = [g for g in games if g["outcome"] == "clear"]
+    # Fireball deaths aren't counted against him for now (the user's call): those games are left out of the percentages.
+    fire = sum(g["outcome"] != "clear" and g["cause"] == "fireball" for g in games)
+    n = total - fire
     goal = sum(g["score"] >= GOAL_SCORE for g in clears)
     scores = sorted(g["score"] for g in clears)
     causes, floors = {}, {}
@@ -95,7 +105,9 @@ def summary(games):
             causes[k] = causes.get(k, 0) + 1
         floors[g["floor"]] = floors.get(g["floor"], 0) + 1
     return {
-        "games": n,
+        "games": total,
+        "fireball_deaths": fire,
+        "clear_rate_all": len(clears) / total if total else 0,
         "clears": len(clears),
         "clear_rate": len(clears) / n if n else 0,
         "goal_hits": goal,

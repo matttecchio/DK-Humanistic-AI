@@ -1,0 +1,535 @@
+8005636: 60 frames before, move 1 8 2 nil 2: 1000/1000  BANKED
+8005636: 60 frames before, move 1 8 2 nil 1: 1000/1000
+8010884: 72 frames before, move 2 16 1 nil 1: 933/1000
+8011228: 36 frames before, move 1 8 2 nil 1: 1000/1000  BANKED
+8011228: 36 frames before, move 1 8 2 nil 0: 1000/1000
+8011908: 60 frames before, move 0 0 1 nil 2: 1000/1000  BANKED
+8011908: 60 frames before, move 0 0 1 nil 1: 1000/1000
+8000588: 60 frames before, move 0 8 1 nil 2: 980/1000
+8000588: 60 frames before, move 0 8 1 nil 0: 977/1000
+8011692: 60 frames before, move 2 8 2 nil 1: 966/1000
+8011692: 60 frames before, move 2 8 2 nil 0: 939/1000
+8014764: 84 frames before, move 1 8 0 nil 2: 999/1000
+8014764: 84 frames before, move 1 8 0 nil 1: 999/1000
+8001868: 60 frames before, move 0 0 2 nil 0: 972/1000
+8001868: 72 frames before, move 2 8 2 nil 2: 984/1000
+8007524: 72 frames before, move 2 8 0 nil 1: 991/1000
+8007524: 72 frames before, move 2 8 0 nil 0: 994/1000
+8004452: 48 frames before, move 2 8 2 nil 1: 1000/1000  BANKED
+8004452: 48 frames before, move 2 8 2 nil 0: 1000/1000
+8005396: 48 frames before, move 2 8 2 nil 1: 1000/1000  BANKED
+8005396: 48 frames before, move 2 8 2 nil 0: 1000/1000
+8012780: 48 frames before, move 2 8 1 nil 2: 1000/1000  BANKED
+8012780: 48 frames before, move 2 8 1 nil 1: 1000/1000
+8001180: 108 frames before, move 2 8 0 nil 2: 981/1000
+8001180: 108 frames before, move 1 8 2 nil 0: 973/1000
+8014460: 24 frames before, move 2 8 1 nil 2: 993/1000
+8014460: 24 frames before, move 2 8 1 nil 1: 992/1000
+8013340: 48 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8013340: 48 frames before, move 1 16 2 nil 1: 1000/1000
+8009868: 108 frames before, move 2 4 nil nil nil: 998/1000
+8009868: 108 frames before, move 2 10 nil nil nil: 996/1000
+8007460: 48 frames before, move 2 8 2 nil 1: 1000/1000  BANKED
+8007460: 48 frames before, move 2 8 2 nil 0: 1000/1000
+8014252: 24 frames before, move 2 20 nil nil nil: 994/1000
+8014252: 24 frames before, move 2 16 0 nil 2: 995/1000
+8015540: 60 frames before, move 0 8 2 nil 2: 975/1000
+8015540: 60 frames before, move 0 8 2 nil 1: 971/1000
+8015916: 24 frames before, move 2 8 1 nil 2: 990/1000
+8015916: 24 frames before, move 2 8 1 nil 0: 991/1000
+8012084: 24 frames before, move 2 16 0 nil 2: 996/1000
+8012084: 24 frames before, move 2 16 0 nil 0: 969/1000
+8005932: 60 frames before, move 2 8 0 nil 2: 994/1000
+8005932: 60 frames before, move 2 8 0 nil 1: 981/1000
+8002276: 60 frames before, move 2 4 nil nil nil: 996/1000
+8002276: 60 frames before, move 1 4 nil nil nil: 998/1000
+8000580: 24 frames before, move 2 8 0 nil 2: 978/1000
+8012428: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8012428: 60 frames before, move 1 20 nil nil nil: 998/1000
+8010212: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8010212: 60 frames before, move 2 10 nil nil nil: 999/1000
+8015420: 60 frames before, move 1 4 nil nil nil: 996/1000
+8000532: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8000532: 60 frames before, move 1 4 nil nil nil: 998/1000
+8015604: 60 frames before, move 2 4 nil nil nil: 999/1000
+8015604: 60 frames before, move 1 4 nil nil nil: 999/1000
+8000812: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8000812: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8015380: 48 frames before, move 2 8 2 nil 1: 999/1000
+8015380: 48 frames before, move 2 8 2 nil 0: 1000/1000  BANKED
+8005452: 48 frames before, move 2 4 nil nil nil: 991/1000
+8005452: 48 frames before, move 2 20 nil nil nil: 991/1000
+8007580: 60 frames before, move 2 8 1 nil 0: 989/1000
+8007580: 60 frames before, move 2 8 0 nil 2: 985/1000
+8013228: 84 frames before, move 2 8 2 nil 0: 957/1000
+8004844: 24 frames before, move 2 16 2 nil 1: 793/1000
+8000412: 48 frames before, move 2 8 2 nil 2: 969/1000
+8000412: 48 frames before, move 2 8 1 nil 2: 954/1000
+8008508: 48 frames before, move 2 8 2 nil 0: 958/1000
+8003412: 48 frames before, move 2 8 1 nil 2: 981/1000
+8003412: 48 frames before, move 2 8 1 nil 0: 972/1000
+lot 1: 50 deaths, 50 with a move that cleared once, 38 passed 30/30, 13 passed 1000/1000; 13 banked so far
+8016860: 24 frames before, move 0 8 2 nil 1: 965/1000
+8016860: 24 frames before, move 0 8 0 nil 1: 1000/1000  BANKED
+8019340: 60 frames before, move 2 20 nil nil nil: 973/1000
+8012238: 48 frames before, move 2 8 1 nil 2: 999/1000
+8012238: 48 frames before, move 2 8 1 nil 1: 998/1000
+8014334: 24 frames before, move 2 4 nil nil nil: 998/1000
+8014334: 24 frames before, move 1 16 1 nil 2: 994/1000
+8010150: 60 frames before, move 2 8 1 nil 1: 995/1000
+8010150: 60 frames before, move 0 8 1 nil 2: 999/1000
+8007902: 36 frames before, move 1 8 2 nil 1: 1000/1000  BANKED
+8007902: 36 frames before, move 1 8 2 nil 0: 1000/1000
+8015806: 24 frames before, move 1 8 1 nil 2: 983/1000
+8015806: 24 frames before, move 1 8 1 nil 0: 977/1000
+8004086: 60 frames before, move 2 8 1 nil 2: 988/1000
+8016956: 96 frames before, move 0 0 1 nil 0: 993/1000
+8006526: 36 frames before, move 1 8 1 nil 1: 999/1000
+8006526: 36 frames before, move 0 0 2 nil 2: 998/1000
+8000798: 48 frames before, move 1 8 1 nil 1: 1000/1000  BANKED
+8000798: 48 frames before, move 1 8 1 nil 0: 999/1000
+8000606: 60 frames before, move 2 4 nil nil nil: 994/1000
+8000606: 72 frames before, move 2 8 2 nil 1: 982/1000
+8019180: 60 frames before, move 2 8 0 nil 0: 981/1000
+8019180: 60 frames before, move 0 0 0 nil 0: 987/1000
+8009590: 48 frames before, move 2 8 1 nil 2: 988/1000
+8009590: 48 frames before, move 2 8 1 nil 1: 994/1000
+8017670: 24 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8017670: 24 frames before, move 1 16 2 nil 1: 1000/1000
+8019076: 36 frames before, move 1 8 2 nil 1: 1000/1000  BANKED
+8019076: 36 frames before, move 1 8 2 nil 0: 1000/1000
+8005134: 36 frames before, move 2 8 1 nil 2: 999/1000
+8005134: 36 frames before, move 2 8 1 nil 1: 1000/1000  BANKED
+8001830: 48 frames before, move 2 8 1 nil 2: 999/1000
+8001830: 48 frames before, move 2 8 1 nil 1: 999/1000
+8000550: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8000550: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8011646: 48 frames before, move 0 8 2 nil 0: 990/1000
+8014406: 48 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8014406: 48 frames before, move 1 16 2 nil 1: 1000/1000
+8009982: 36 frames before, move 1 8 0 nil 1: 1000/1000  BANKED
+8009982: 36 frames before, move 1 8 0 nil 0: 1000/1000
+8014870: 60 frames before, move 2 4 nil nil nil: 990/1000
+8014870: 60 frames before, move 2 20 nil nil nil: 990/1000
+8001654: 24 frames before, move 1 8 2 nil 2: 1000/1000  BANKED
+8001654: 24 frames before, move 1 8 2 nil 1: 1000/1000
+8014918: 24 frames before, move 0 8 0 nil 2: 994/1000
+8014918: 24 frames before, move 0 0 0 nil 2: 1000/1000  BANKED
+8016718: 120 frames before, move 2 8 1 nil 2: 987/1000
+8016718: 120 frames before, move 2 8 1 nil 1: 988/1000
+8009798: 60 frames before, move 1 10 nil nil nil: 998/1000
+8004982: 24 frames before, move 2 16 0 nil 2: 990/1000
+8004982: 24 frames before, move 2 16 0 nil 1: 990/1000
+8011470: 48 frames before, move 2 20 nil nil nil: 985/1000
+8011470: 48 frames before, move 2 10 nil nil nil: 985/1000
+8012878: 132 frames before, move 2 8 2 nil 2: 976/1000
+8011958: 108 frames before, move 1 8 2 nil 2: 948/1000
+8011958: 108 frames before, move 1 8 2 nil 1: 951/1000
+8018270: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8018270: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8003054: 48 frames before, move 1 8 2 nil 2: 995/1000
+8003054: 48 frames before, move 1 8 2 nil 1: 994/1000
+8018414: 36 frames before, move 1 8 1 nil 2: 1000/1000  BANKED
+8018414: 36 frames before, move 1 8 1 nil 1: 999/1000
+8016308: 60 frames before, move 2 8 2 nil 2: 958/1000
+8016308: 60 frames before, move 2 8 0 nil 2: 957/1000
+8007318: 60 frames before, move 2 16 1 nil 0: 962/1000
+8011934: 72 frames before, move 2 20 nil nil nil: 972/1000
+8011934: 72 frames before, move 2 16 2 nil 1: 827/1000
+8018046: 72 frames before, move 2 8 2 nil 1: 999/1000
+8010086: 48 frames before, move 2 4 nil nil nil: 991/1000
+8010086: 48 frames before, move 2 20 nil nil nil: 984/1000
+8001742: 60 frames before, move 2 8 1 nil 2: 949/1000
+8005582: 24 frames before, move 2 20 nil nil nil: 982/1000
+8005582: 24 frames before, move 2 10 nil nil nil: 982/1000
+lot 2: 50 deaths, 50 with a move that cleared once, 41 passed 30/30, 13 passed 1000/1000; 26 banked so far
+8002306: 60 frames before, move 2 4 nil nil nil: 994/1000
+8002306: 60 frames before, move 2 10 nil nil nil: 997/1000
+8010426: 36 frames before, move 2 8 0 nil 1: 1000/1000  BANKED
+8014842: 60 frames before, move 1 8 0 nil 1: 919/1000
+8012594: 36 frames before, move 1 16 0 nil 1: 1000/1000  BANKED
+8012594: 36 frames before, move 1 16 0 nil 0: 1000/1000
+8012706: 48 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8012706: 48 frames before, move 1 16 1 nil 2: 1000/1000
+8012354: 48 frames before, move 1 16 2 nil 2: 997/1000
+8012354: 48 frames before, move 1 16 2 nil 1: 1000/1000  BANKED
+8018886: 48 frames before, move 1 16 2 nil 2: 995/1000
+8018886: 48 frames before, move 1 16 2 nil 1: 1000/1000  BANKED
+8008666: 36 frames before, move 2 16 1 nil 1: 1000/1000  BANKED
+8008666: 36 frames before, move 2 16 1 nil 0: 1000/1000
+8009618: 48 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8009618: 48 frames before, move 1 16 1 nil 2: 1000/1000
+8000712: 48 frames before, move 1 8 2 nil 2: 952/1000
+8000712: 48 frames before, move 1 16 2 nil 2: 991/1000
+8007426: 60 frames before, move 2 4 nil nil nil: 981/1000
+8007426: 60 frames before, move 1 4 nil nil nil: 996/1000
+8019698: 108 frames before, move 1 20 nil nil nil: 968/1000
+8019698: 108 frames before, move 1 16 0 nil 2: 956/1000
+8002362: 156 frames before, move 2 8 2 nil 2: 983/1000
+8002362: 156 frames before, move 2 8 1 nil 2: 992/1000
+8016786: 48 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8016786: 48 frames before, move 1 16 1 nil 2: 1000/1000
+8000442: 36 frames before, move 1 8 1 nil 2: 999/1000
+8000442: 36 frames before, move 1 8 1 nil 1: 998/1000
+8001072: 48 frames before, move 2 8 1 nil 2: 1000/1000  BANKED
+8001072: 48 frames before, move 2 8 0 nil 2: 996/1000
+8006482: 48 frames before, move 1 4 nil nil nil: 943/1000
+8006482: 48 frames before, move 1 16 2 nil 0: 976/1000
+8007802: 108 frames before, move 1 8 0 nil 2: 926/1000
+8007802: 108 frames before, move 1 8 0 nil 1: 926/1000
+8016738: 48 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8016738: 48 frames before, move 1 16 2 nil 1: 1000/1000
+8001778: 24 frames before, move 2 20 nil nil nil: 989/1000
+8001778: 24 frames before, move 2 16 0 nil 2: 988/1000
+8018950: 60 frames before, move 2 4 nil nil nil: 990/1000
+8018950: 60 frames before, move 2 20 nil nil nil: 994/1000
+8005122: 60 frames before, move 2 8 1 nil 2: 985/1000
+8005122: 60 frames before, move 2 8 1 nil 1: 981/1000
+8001530: 60 frames before, move 2 4 nil nil nil: 985/1000
+8001530: 60 frames before, move 1 8 2 nil 2: 984/1000
+8005690: 48 frames before, move 2 16 1 nil 2: 988/1000
+8009506: 60 frames before, move 2 8 1 nil 0: 997/1000
+8009506: 60 frames before, move 2 8 0 nil 2: 976/1000
+8018958: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8018958: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8019150: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8019150: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8018922: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8018922: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8002914: 60 frames before, move 2 4 nil nil nil: 996/1000
+8018834: 60 frames before, move 2 4 nil nil nil: 979/1000
+8018834: 60 frames before, move 2 20 nil nil nil: 979/1000
+8010802: 24 frames before, move 2 8 1 nil 1: 992/1000
+8001384: 96 frames before, move 2 16 1 nil 1: 980/1000
+8017338: 24 frames before, move 2 16 0 nil 1: 965/1000
+8000152: 72 frames before, move 2 16 1 nil 2: 981/1000
+lot 3: 50 deaths, 50 with a move that cleared once, 34 passed 30/30, 13 passed 1000/1000; 39 banked so far
+8014328: 24 frames before, move 2 8 1 nil 0: 953/1000
+8004296: 24 frames before, move 2 4 nil nil nil: 980/1000
+8004296: 24 frames before, move 2 20 nil nil nil: 986/1000
+8009000: 60 frames before, move 2 16 2 nil 2: 977/1000
+8009232: 36 frames before, move 1 8 1 nil 1: 1000/1000  BANKED
+8009232: 36 frames before, move 1 8 1 nil 0: 1000/1000
+8006024: 72 frames before, move 1 8 2 nil 1: 977/1000
+8006024: 72 frames before, move 1 8 2 nil 0: 984/1000
+8001872: 48 frames before, move 1 8 2 nil 2: 1000/1000  BANKED
+8001872: 48 frames before, move 1 8 2 nil 1: 1000/1000
+8016688: 24 frames before, move 2 8 0 nil 2: 907/1000
+8016688: 24 frames before, move 2 8 0 nil 1: 907/1000
+8014040: 48 frames before, move 1 8 1 nil 2: 987/1000
+8014040: 48 frames before, move 1 8 1 nil 0: 986/1000
+8014968: 60 frames before, move 2 8 0 nil 2: 950/1000
+8014968: 60 frames before, move 2 8 0 nil 1: 950/1000
+8012624: 48 frames before, move 2 4 nil nil nil: 999/1000
+8001992: 48 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8001992: 48 frames before, move 1 16 2 nil 2: 1000/1000
+8014432: 24 frames before, move 1 8 1 nil 2: 999/1000
+8014432: 24 frames before, move 1 8 1 nil 1: 999/1000
+8012416: 60 frames before, move 2 4 nil nil nil: 990/1000
+8012416: 60 frames before, move 2 20 nil nil nil: 954/1000
+8016144: 60 frames before, move 1 16 1 nil 2: 996/1000
+8016144: 60 frames before, move 1 16 1 nil 1: 995/1000
+8015144: 48 frames before, move 2 4 nil nil nil: 999/1000
+8015144: 48 frames before, move 1 16 2 nil 2: 999/1000
+8005240: 48 frames before, move 1 10 nil nil nil: 1000/1000  BANKED
+8005240: 48 frames before, move 0 8 1 nil 2: 994/1000
+8002136: 120 frames before, move 2 8 1 nil 2: 999/1000
+8002136: 120 frames before, move 2 8 1 nil 0: 1000/1000  BANKED
+8001440: 48 frames before, move 2 4 nil nil nil: 993/1000
+8001440: 48 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8018864: 72 frames before, move 0 8 1 nil 2: 992/1000
+8003272: 60 frames before, move 2 20 nil nil nil: 990/1000
+8003272: 60 frames before, move 2 10 nil nil nil: 990/1000
+8010800: 48 frames before, move 2 8 2 nil 2: 972/1000
+8010800: 48 frames before, move 2 8 2 nil 1: 977/1000
+8002312: 60 frames before, move 1 4 nil nil nil: 1000/1000  BANKED
+8002312: 60 frames before, move 1 20 nil nil nil: 992/1000
+8000055: 36 frames before, move 2 10 nil nil nil: 992/1000
+8013632: 60 frames before, move 2 4 nil nil nil: 985/1000
+8013632: 60 frames before, move 2 20 nil nil nil: 995/1000
+8000807: 60 frames before, move 2 8 1 nil 2: 992/1000
+8000807: 60 frames before, move 2 8 1 nil 0: 984/1000
+8002120: 72 frames before, move 2 8 2 nil 1: 968/1000
+8013512: 36 frames before, move 2 8 1 nil 2: 998/1000
+8013512: 36 frames before, move 2 8 1 nil 1: 995/1000
+8000055: 96 frames before, move 2 8 0 nil 0: 988/1000
+8016040: 60 frames before, move 1 8 2 nil 2: 994/1000
+8016040: 60 frames before, move 1 8 2 nil 1: 994/1000
+8009688: 60 frames before, move 2 4 nil nil nil: 994/1000
+8009688: 60 frames before, move 2 10 nil nil nil: 1000/1000  BANKED
+8014608: 60 frames before, move 2 4 nil nil nil: 994/1000
+8014608: 60 frames before, move 1 4 nil nil nil: 1000/1000  BANKED
+8009784: 36 frames before, move 1 8 1 nil 2: 999/1000
+8009784: 36 frames before, move 1 8 1 nil 1: 1000/1000  BANKED
+8018096: 36 frames before, move 1 8 1 nil 2: 999/1000
+8018096: 36 frames before, move 1 8 1 nil 1: 998/1000
+8002320: 72 frames before, move 2 20 nil nil nil: 963/1000
+8007768: 72 frames before, move 2 8 1 nil 2: 994/1000
+8007768: 72 frames before, move 2 8 1 nil 1: 997/1000
+8004128: 72 frames before, move 2 10 nil nil nil: 941/1000
+8006376: 72 frames before, move 2 10 nil nil nil: 1000/1000  BANKED
+8006376: 72 frames before, move 1 8 0 nil 2: 992/1000
+8019448: 48 frames before, move 2 16 0 nil 1: 989/1000
+8019448: 60 frames before, move 0 8 0 nil 2: 985/1000
+8011816: 60 frames before, move 2 8 1 nil 2: 981/1000
+8011816: 60 frames before, move 2 8 1 nil 1: 969/1000
+8008000: 48 frames before, move 2 8 1 nil 1: 971/1000
+8008000: 48 frames before, move 2 8 1 nil 0: 966/1000
+lot 4: 50 deaths, 50 with a move that cleared once, 39 passed 30/30, 11 passed 1000/1000; 50 banked so far
+8019135: 48 frames before, move 2 8 2 nil 1: 955/1000
+8019135: 48 frames before, move 2 4 nil nil nil: 969/1000
+8010479: 48 frames before, move 1 8 2 nil 2: 1000/1000  BANKED
+8010479: 48 frames before, move 1 8 2 nil 1: 1000/1000
+8002941: 48 frames before, move 2 8 2 nil 1: 1000/1000  BANKED
+8002941: 48 frames before, move 2 8 2 nil 0: 1000/1000
+8000517: 48 frames before, move 2 8 2 nil 1: 1000/1000  BANKED
+8000517: 48 frames before, move 2 8 2 nil 0: 999/1000
+8002511: 36 frames before, move 1 8 0 nil 1: 992/1000
+8002511: 36 frames before, move 1 8 0 nil 0: 997/1000
+8016111: 24 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8016111: 24 frames before, move 1 16 1 nil 1: 985/1000
+8018431: 36 frames before, move 2 8 1 nil 2: 1000/1000  BANKED
+8018431: 36 frames before, move 2 8 1 nil 1: 1000/1000
+8011335: 48 frames before, move 1 16 2 nil 2: 997/1000
+8011335: 48 frames before, move 1 16 2 nil 1: 997/1000
+8014919: 36 frames before, move 1 8 2 nil 1: 1000/1000  BANKED
+8014919: 36 frames before, move 1 8 2 nil 0: 1000/1000
+8017327: 48 frames before, move 2 4 nil nil nil: 999/1000
+8017327: 48 frames before, move 0 8 1 nil 2: 998/1000
+8008263: 48 frames before, move 1 8 2 nil 2: 1000/1000  BANKED
+8008263: 48 frames before, move 1 8 2 nil 1: 1000/1000
+8003063: 60 frames before, move 2 16 2 nil 2: 993/1000
+8003063: 60 frames before, move 2 16 2 nil 1: 994/1000
+8005797: 36 frames before, move 2 8 2 nil 2: 973/1000
+8005797: 36 frames before, move 2 8 0 nil 2: 995/1000
+8011151: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8011151: 60 frames before, move 2 20 nil nil nil: 1000/1000
+8001853: 60 frames before, move 2 4 nil nil nil: 997/1000
+8001853: 60 frames before, move 2 10 nil nil nil: 1000/1000  BANKED
+8002189: 84 frames before, move 0 8 0 nil 2: 1000/1000  BANKED
+8002189: 84 frames before, move 0 8 0 nil 1: 1000/1000
+8005613: 48 frames before, move 1 8 2 nil 2: 955/1000
+8005613: 48 frames before, move 1 8 1 nil 2: 953/1000
+8011431: 48 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8011431: 48 frames before, move 1 16 2 nil 1: 1000/1000
+8012151: 48 frames before, move 2 16 1 nil 2: 992/1000
+8012151: 48 frames before, move 1 8 1 nil 2: 997/1000
+8018367: 60 frames before, move 1 8 2 nil 2: 961/1000
+8018367: 60 frames before, move 1 8 2 nil 0: 988/1000
+8005863: 60 frames before, move 2 4 nil nil nil: 993/1000
+8005863: 60 frames before, move 2 20 nil nil nil: 992/1000
+8005421: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8005421: 60 frames before, move 2 20 nil nil nil: 999/1000
+8001375: 60 frames before, move 0 0 1 nil 2: 991/1000
+8010175: 60 frames before, move 2 4 nil nil nil: 961/1000
+8010175: 60 frames before, move 1 8 0 nil 2: 989/1000
+8007743: 60 frames before, move 2 8 1 nil 2: 992/1000
+8007743: 60 frames before, move 2 8 1 nil 1: 984/1000
+8011639: 48 frames before, move 2 8 0 nil 2: 983/1000
+8011639: 48 frames before, move 2 8 0 nil 1: 982/1000
+8003765: 60 frames before, move 1 4 nil nil nil: 996/1000
+8003765: 60 frames before, move 1 10 nil nil nil: 993/1000
+8003093: 24 frames before, move 2 16 1 nil 1: 955/1000
+8003989: 24 frames before, move 2 16 0 nil 1: 904/1000
+8006423: 60 frames before, move 2 8 2 nil 1: 961/1000
+8006423: 60 frames before, move 2 8 1 nil 1: 951/1000
+8003967: 48 frames before, move 2 8 2 nil 1: 967/1000
+8003967: 48 frames before, move 2 8 2 nil 0: 980/1000
+8004045: 48 frames before, move 2 8 2 nil 2: 928/1000
+8004045: 48 frames before, move 2 8 1 nil 2: 977/1000
+lot 5: 50 deaths, 50 with a move that cleared once, 32 passed 30/30, 12 passed 1000/1000; 62 banked so far
+8017533: 60 frames before, move 2 8 0 nil 2: 986/1000
+8017533: 60 frames before, move 2 8 0 nil 1: 970/1000
+8016965: 60 frames before, move 1 4 nil nil nil: 973/1000
+8016965: 60 frames before, move 0 8 2 nil 2: 978/1000
+8009917: 108 frames before, move 1 8 0 nil 0: 987/1000
+8016549: 36 frames before, move 1 8 2 nil 2: 1000/1000  BANKED
+8016549: 36 frames before, move 1 8 2 nil 1: 1000/1000
+8011477: 48 frames before, move 2 4 nil nil nil: 994/1000
+8011477: 48 frames before, move 1 8 0 nil 2: 996/1000
+8008293: 24 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8008293: 24 frames before, move 1 16 2 nil 1: 999/1000
+8007789: 48 frames before, move 2 8 1 nil 2: 1000/1000  BANKED
+8007789: 48 frames before, move 2 8 1 nil 1: 999/1000
+8008573: 48 frames before, move 2 8 1 nil 2: 1000/1000  BANKED
+8008573: 48 frames before, move 2 8 1 nil 1: 1000/1000
+8017493: 36 frames before, move 1 8 2 nil 1: 1000/1000  BANKED
+8017493: 36 frames before, move 1 8 2 nil 0: 998/1000
+8019149: 36 frames before, move 1 8 0 nil 1: 1000/1000  BANKED
+8019149: 36 frames before, move 1 8 0 nil 0: 1000/1000
+8010989: 24 frames before, move 2 4 nil nil nil: 964/1000
+8010989: 24 frames before, move 2 20 nil nil nil: 983/1000
+8017741: 36 frames before, move 2 8 1 nil 2: 995/1000
+8017741: 36 frames before, move 2 8 1 nil 1: 996/1000
+8010101: 48 frames before, move 2 8 2 nil 1: 996/1000
+8010101: 48 frames before, move 2 8 2 nil 0: 998/1000
+8014509: 24 frames before, move 2 20 nil nil nil: 988/1000
+8014509: 24 frames before, move 2 10 nil nil nil: 987/1000
+8006477: 84 frames before, move 2 4 nil nil nil: 981/1000
+8006477: 84 frames before, move 2 20 nil nil nil: 983/1000
+8006685: 24 frames before, move 2 8 1 nil 2: 1000/1000  BANKED
+8006685: 24 frames before, move 2 8 1 nil 0: 991/1000
+8012717: 48 frames before, move 1 10 nil nil nil: 999/1000
+8012213: 48 frames before, move 2 8 2 nil 2: 1000/1000  BANKED
+8012213: 48 frames before, move 2 8 2 nil 1: 999/1000
+8015925: 24 frames before, move 2 16 2 nil 1: 928/1000
+8015925: 24 frames before, move 2 16 1 nil 2: 951/1000
+8018077: 132 frames before, move 2 8 2 nil 2: 992/1000
+8018077: 132 frames before, move 0 0 2 nil 2: 991/1000
+8015909: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8015909: 60 frames before, move 1 4 nil nil nil: 1000/1000
+8012189: 48 frames before, move 1 8 1 nil 2: 994/1000
+8012189: 48 frames before, move 1 8 1 nil 0: 993/1000
+8012717: 108 frames before, move 0 0 2 nil 2: 1000/1000  BANKED
+8001241: 48 frames before, move 1 8 2 nil 2: 1000/1000  BANKED
+8001241: 48 frames before, move 1 8 2 nil 1: 1000/1000
+8008605: 60 frames before, move 0 8 2 nil 0: 960/1000
+8010317: 108 frames before, move 0 0 0 nil 0: 984/1000
+8019725: 60 frames before, move 2 8 0 nil 2: 1000/1000  BANKED
+8019725: 60 frames before, move 2 8 0 nil 1: 1000/1000
+8009349: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8009349: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8008605: 120 frames before, move 2 8 1 nil 2: 987/1000
+8013277: 24 frames before, move 0 0 1 nil 2: 991/1000
+lot 6: 50 deaths, 50 with a move that cleared once, 28 passed 30/30, 13 passed 1000/1000; 75 banked so far
+8014681: 84 frames before, move 0 0 1 nil 2: 1000/1000  BANKED
+8014681: 84 frames before, move 0 0 1 nil 1: 1000/1000
+8015161: 72 frames before, move 2 8 1 nil 1: 960/1000
+8015161: 72 frames before, move 2 8 1 nil 0: 991/1000
+8002465: 48 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8002465: 48 frames before, move 1 16 2 nil 1: 1000/1000
+8000011: 96 frames before, move 2 8 1 nil 2: 990/1000
+8017521: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8017521: 60 frames before, move 1 4 nil nil nil: 1000/1000
+8012113: 24 frames before, move 1 16 1 nil 2: 964/1000
+8012113: 24 frames before, move 1 16 1 nil 1: 957/1000
+8010457: 36 frames before, move 1 8 1 nil 1: 1000/1000  BANKED
+8010457: 36 frames before, move 1 8 1 nil 0: 998/1000
+8006153: 24 frames before, move 2 16 1 nil 1: 972/1000
+8006153: 24 frames before, move 2 16 0 nil 1: 970/1000
+8001355: 60 frames before, move 2 10 nil nil nil: 988/1000
+8001355: 60 frames before, move 0 0 0 nil 2: 987/1000
+8006553: 36 frames before, move 0 8 1 nil 2: 995/1000
+8006553: 36 frames before, move 0 8 1 nil 1: 991/1000
+8013497: 48 frames before, move 1 8 2 nil 2: 998/1000
+8013497: 48 frames before, move 1 8 2 nil 1: 998/1000
+8011353: 36 frames before, move 1 8 0 nil 2: 1000/1000  BANKED
+8011353: 36 frames before, move 1 8 0 nil 1: 1000/1000
+8019025: 60 frames before, move 2 4 nil nil nil: 999/1000
+8019025: 60 frames before, move 1 4 nil nil nil: 1000/1000  BANKED
+8010617: 48 frames before, move 2 4 nil nil nil: 995/1000
+8010617: 48 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8003361: 96 frames before, move 2 8 0 nil 2: 998/1000
+8003361: 96 frames before, move 2 8 0 nil 1: 998/1000
+8018841: 60 frames before, move 1 8 2 nil 0: 983/1000
+8011601: 48 frames before, move 2 8 2 nil 1: 1000/1000  BANKED
+8011601: 48 frames before, move 2 8 2 nil 0: 1000/1000
+8005217: 48 frames before, move 1 16 1 nil 2: 996/1000
+8005217: 48 frames before, move 1 16 1 nil 1: 997/1000
+8007265: 60 frames before, move 1 8 0 nil 2: 995/1000
+8007265: 60 frames before, move 1 8 0 nil 1: 992/1000
+8001403: 108 frames before, move 2 8 1 nil 2: 995/1000
+8001403: 108 frames before, move 2 8 1 nil 1: 971/1000
+8007377: 96 frames before, move 2 8 0 nil 2: 1000/1000  BANKED
+8007377: 96 frames before, move 2 8 0 nil 1: 1000/1000
+8006177: 60 frames before, move 2 8 1 nil 2: 993/1000
+8006177: 60 frames before, move 2 8 1 nil 1: 996/1000
+8016145: 48 frames before, move 2 8 0 nil 2: 996/1000
+8016145: 48 frames before, move 2 8 0 nil 1: 993/1000
+8003249: 48 frames before, move 0 8 2 nil 2: 1000/1000  BANKED
+8003249: 48 frames before, move 0 8 2 nil 1: 1000/1000
+8001561: 24 frames before, move 2 8 1 nil 2: 983/1000
+8001561: 24 frames before, move 2 20 nil nil nil: 985/1000
+8001761: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8001761: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8016337: 60 frames before, move 1 16 1 nil 2: 987/1000
+8016337: 60 frames before, move 1 16 1 nil 0: 943/1000
+8019409: 60 frames before, move 0 8 2 nil 2: 987/1000
+8019409: 60 frames before, move 0 8 2 nil 1: 981/1000
+8016969: 48 frames before, move 2 20 nil nil nil: 984/1000
+8016969: 48 frames before, move 0 8 0 nil 1: 997/1000
+8019377: 48 frames before, move 2 8 2 nil 0: 952/1000
+8000659: 108 frames before, move 0 0 0 nil 2: 1000/1000  BANKED
+8000659: 108 frames before, move 0 0 0 nil 1: 1000/1000
+8009729: 108 frames before, move 2 8 2 nil 1: 986/1000
+8009729: 108 frames before, move 2 8 2 nil 0: 982/1000
+8019953: 60 frames before, move 2 8 1 nil 0: 983/1000
+8019953: 60 frames before, move 2 8 0 nil 2: 994/1000
+8015353: 24 frames before, move 2 16 1 nil 1: 961/1000
+8001755: 48 frames before, move 2 8 1 nil 1: 964/1000
+8008257: 48 frames before, move 2 8 1 nil 1: 966/1000
+8008257: 48 frames before, move 2 8 1 nil 0: 967/1000
+lot 7: 50 deaths, 50 with a move that cleared once, 36 passed 30/30, 12 passed 1000/1000; 87 banked so far
+8004027: 24 frames before, move 1 16 2 nil 2: 1000/1000  BANKED
+8004027: 24 frames before, move 1 16 2 nil 1: 1000/1000
+8018251: 24 frames before, move 2 16 0 nil 1: 994/1000
+8018251: 24 frames before, move 2 16 0 nil 0: 991/1000
+8006283: 60 frames before, move 0 0 0 nil 1: 995/1000
+8006283: 60 frames before, move 0 0 0 nil 0: 993/1000
+8012499: 72 frames before, move 1 20 nil nil nil: 965/1000
+8012499: 72 frames before, move 1 16 0 nil 2: 985/1000
+8005083: 48 frames before, move 2 4 nil nil nil: 970/1000
+8005083: 48 frames before, move 1 16 1 nil 2: 968/1000
+8013707: 96 frames before, move 2 4 nil nil nil: 996/1000
+8013707: 96 frames before, move 2 10 nil nil nil: 997/1000
+8011755: 48 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8011755: 48 frames before, move 1 16 1 nil 2: 1000/1000
+8014483: 48 frames before, move 2 8 2 nil 1: 1000/1000  BANKED
+8014483: 48 frames before, move 2 8 2 nil 0: 1000/1000
+8009803: 60 frames before, move 2 4 nil nil nil: 977/1000
+8009803: 60 frames before, move 0 8 0 nil 2: 969/1000
+8010635: 48 frames before, move 2 8 1 nil 2: 978/1000
+8010635: 48 frames before, move 2 8 1 nil 1: 985/1000
+8018067: 48 frames before, move 2 8 0 nil 2: 995/1000
+8018067: 48 frames before, move 2 8 0 nil 1: 995/1000
+8011227: 60 frames before, move 2 8 0 nil 2: 964/1000
+8011227: 60 frames before, move 2 8 0 nil 1: 964/1000
+8002571: 24 frames before, move 2 8 2 nil 0: 931/1000
+8002227: 60 frames before, move 2 20 nil nil nil: 996/1000
+8002227: 60 frames before, move 1 8 1 nil 2: 994/1000
+8007427: 48 frames before, move 2 8 2 nil 1: 1000/1000  BANKED
+8007427: 48 frames before, move 2 8 2 nil 0: 1000/1000
+8005251: 48 frames before, move 1 8 1 nil 1: 987/1000
+8005251: 48 frames before, move 0 0 1 nil 2: 999/1000
+8014891: 24 frames before, move 2 20 nil nil nil: 989/1000
+8014891: 24 frames before, move 2 16 0 nil 2: 999/1000
+8002443: 36 frames before, move 2 20 nil nil nil: 989/1000
+8006619: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8006619: 60 frames before, move 2 10 nil nil nil: 1000/1000
+8006163: 48 frames before, move 1 8 2 nil 2: 971/1000
+8006163: 48 frames before, move 1 8 1 nil 2: 989/1000
+8013363: 60 frames before, move 2 8 0 nil 2: 986/1000
+8013363: 60 frames before, move 2 8 0 nil 1: 979/1000
+8003851: 36 frames before, move 2 16 1 nil 2: 963/1000
+8003851: 36 frames before, move 2 16 1 nil 0: 991/1000
+8015603: 84 frames before, move 0 8 0 nil 2: 967/1000
+8015603: 84 frames before, move 0 8 0 nil 1: 967/1000
+8016683: 60 frames before, move 2 10 nil nil nil: 1000/1000  BANKED
+8016683: 60 frames before, move 1 4 nil nil nil: 997/1000
+8018331: 60 frames before, move 2 8 1 nil 2: 993/1000
+8018331: 60 frames before, move 2 8 1 nil 1: 996/1000
+8006515: 60 frames before, move 2 8 1 nil 2: 990/1000
+8006515: 60 frames before, move 2 8 1 nil 1: 985/1000
+8011667: 60 frames before, move 2 8 1 nil 0: 956/1000
+8002595: 72 frames before, move 2 20 nil nil nil: 985/1000
+8002595: 72 frames before, move 2 16 2 nil 2: 992/1000
+8013595: 60 frames before, move 2 8 1 nil 2: 996/1000
+8013595: 60 frames before, move 2 8 1 nil 1: 1000/1000  BANKED
+8016235: 72 frames before, move 1 8 0 nil 2: 975/1000
+8016235: 72 frames before, move 1 8 0 nil 1: 975/1000
+8012571: 48 frames before, move 2 8 1 nil 2: 974/1000
+8010131: 48 frames before, move 2 8 2 nil 1: 963/1000
+8010131: 48 frames before, move 2 20 nil nil nil: 974/1000
+8002131: 48 frames before, move 2 8 1 nil 2: 963/1000
+8002131: 48 frames before, move 2 8 1 nil 1: 965/1000
+lot 8: 50 deaths, 50 with a move that cleared once, 33 passed 30/30, 7 passed 1000/1000; 94 banked so far
+8018427: 72 frames before, move 2 8 1 nil 1: 945/1000
+8018427: 72 frames before, move 1 4 nil nil nil: 1000/1000  BANKED
+8018435: 48 frames before, move 2 8 1 nil 2: 917/1000
+8018435: 48 frames before, move 2 8 1 nil 1: 990/1000
+8019731: 60 frames before, move 2 8 0 nil 2: 995/1000
+8019731: 60 frames before, move 2 8 0 nil 1: 993/1000
+8018515: 24 frames before, move 2 16 0 nil 2: 972/1000
+8019011: 60 frames before, move 2 4 nil nil nil: 1000/1000  BANKED
+8019011: 60 frames before, move 2 10 nil nil nil: 1000/1000
+lot 9: 6 deaths, 6 with a move that cleared once, 5 passed 30/30, 2 passed 1000/1000; 96 banked so far

@@ -5,3 +5,14 @@ starts/
 __pycache__/
 *.pyc
 .DS_Store
+videos/
+# other players' recordings and the traces made from them (theirs to share, and large)
+inps/
+# the native runner's build, its ROM-made start states, test output and the ROM disassembly
+native/build/
+native/starts/
+native/out/
+native/experiments/rom/
+# files MAME writes when it runs here
+cfg/
+snap/

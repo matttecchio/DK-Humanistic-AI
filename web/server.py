@@ -33,7 +33,7 @@ def start_game(kind, replay=None):
             path = f"{LIVE}/replay.txt"
             with open(path, "w") as f:
                 f.write(f"{replay['id']}\n{replay['start']}\n{replay['inp']}\n")
-            env.update(MODE="replay", REPLAY=path)
+            env.update(MODE="replay", REPLAY=path, START_PREFIX=replay.get("prefix", "s"))
         proc = subprocess.Popen([f"{H}/tools/mame.sh", "-numprocessors", "1", "-samplerate", "1000", "-state_directory", f"{H}/starts",
                                  "-autoboot_script", f"{H}/lua/agent.lua"], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         current = {"kind": kind, "id": replay["id"] if replay else None}
@@ -128,6 +128,8 @@ class Handler(BaseHTTPRequestHandler):
         q = parse_qs(u.query)
         if u.path == "/":
             return self.send(open(f"{H}/web/index.html", "rb").read(), "text/html; charset=utf-8")
+        if u.path == "/api/version":
+            return self.send(json.dumps(os.path.getmtime(f"{H}/web/index.html")).encode())
         if u.path == "/detail":
             return self.send(open(f"{H}/web/detail.html", "rb").read(), "text/html; charset=utf-8")
         if u.path == "/frame.png":
@@ -184,6 +186,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(b'{"ok":false}', code=400)
             for g in stats.load(name, inputs=True):
                 if g["id"] == int(gid):
+                    level = json.load(open(f"{stats.RUNS}/{name}/meta.json")).get("level", 1)
+                    g["prefix"] = "s" if level == 1 else f"l{level}_"
                     start_game("replay", g)
                     return self.send(b'{"ok":true}')
             return self.send(b'{"ok":false}', code=404)

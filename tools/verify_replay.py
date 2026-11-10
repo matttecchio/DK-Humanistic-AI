@@ -6,6 +6,7 @@ sys.path.insert(0, f"{H}/tools")
 import stats
 
 name, count = sys.argv[1], int(sys.argv[2]) if len(sys.argv) > 2 else 16
+stats.use_starts(name)
 games = stats.load(name, inputs=True)
 step = max(1, len(games) // count)
 games = games[::step][:count]

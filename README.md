@@ -2,6 +2,7 @@
 
 A program that plays Donkey Kong level 1-1 under human limits: it sees the game 133–167 ms late, can't see the game's upcoming random numbers, and plans ahead like a person. The aim is to clear the board at 9,500+ in 20 of 21 games.
 
+- [PLAYBOOK.md](PLAYBOOK.md): what the player does, key decisions, and how we avoid regressions
 - [FINDINGS.md](FINDINGS.md): what we've learned, including what didn't work
 - [RESULTS_LOG.md](RESULTS_LOG.md): every test result
 
