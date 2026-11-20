@@ -6,8 +6,8 @@ CC = clang
 CXXFLAGS = -std=c++17 -O3 -mcpu=native -ffp-contract=off -I$(DKX) -I$(LUASRC) -w
 CFLAGS = -O2 -mcpu=native -ffp-contract=off -DLUA_USE_MACOSX -w
 LUAOBJ = $(patsubst $(LUASRC)/%.c,build/lua/%.o,$(filter-out $(LUASRC)/lua.c $(LUASRC)/luac.c,$(wildcard $(LUASRC)/*.c)))
-build/dkh: dkh.cpp plan.cpp $(LUAOBJ) $(wildcard $(DKX)/*.cpp $(DKX)/*.h)
-	$(CXX) $(CXXFLAGS) -o $@ dkh.cpp plan.cpp $(DKX)/unity.cpp $(LUAOBJ) -lz
+build/dkh: dkh.cpp plan.cpp rivsim.cpp $(LUAOBJ) $(wildcard $(DKX)/*.cpp $(DKX)/*.h)
+	$(CXX) $(CXXFLAGS) -o $@ dkh.cpp plan.cpp rivsim.cpp $(DKX)/unity.cpp $(LUAOBJ) -lz
 build/lua/%.o: $(LUASRC)/%.c
 	@mkdir -p build/lua
 	$(CC) $(CFLAGS) -c -o $@ $<

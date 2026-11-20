@@ -87,9 +87,20 @@ def frame_png():
 done = {}
 
 
-def batches():
+# finished batches' summaries, kept on disk too, so a restart doesn't re-read every batch (13 GB of them by 2026-11-15)
+CACHE = f"{stats.RUNS}/.batch_summaries.json"
+try:
+    done.update(json.load(open(CACHE)))
+except (OSError, ValueError):
+    pass
+_cache_lock = threading.Lock()
+
+
+def batches(quick=True):
+    """quick (the page's requests): never read a finished batch that isn't summarised yet; the start-up thread (quick=False) does those"""
     out = []
     root = stats.RUNS
+    added = False
     for name in os.listdir(root):
         p = f"{root}/{name}/meta.json"
         if name.startswith(".") or not os.path.exists(p):
@@ -98,12 +109,17 @@ def batches():
         # a finished batch never changes, so only read it once
         if "finished" in m and name in done:
             s = done[name]
+        elif "finished" in m and quick:
+            continue
         else:
             s = stats.summary(stats.load(name))
             if "finished" in m:
-                done[name] = s
+                done[name] = s; added = True
         out.append({**m, **s})
     out.sort(key=lambda b: -b.get("started", 0))
+    if added:
+        with _cache_lock:
+            tmp = CACHE + ".tmp"; json.dump(done, open(tmp, "w")); os.replace(tmp, CACHE)
     return out
 
 
@@ -138,6 +154,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(png, "image/png") if png else self.send(b"", "text/plain", 503)
         if u.path == "/bg.png":
             return self.send(open(f"{H}/web/bg.png", "rb").read(), "image/png")
+        if u.path in ("/bg_rivets.png", "/bg_rivets_items.png"):
+            return self.send(open(f"{H}/web/{u.path[1:]}", "rb").read(), "image/png")
         if u.path == "/api/status":
             try:
                 return self.send(open(f"{stats.RUNS}/status.json", "rb").read())
@@ -198,6 +216,7 @@ def main():
     signal.signal(signal.SIGTERM, lambda *a: (stop_game_locked(), os._exit(0)))
     threading.Thread(target=watchdog, daemon=True).start()
     print(f"http://0.0.0.0:{PORT}/", flush=True)
+    threading.Thread(target=batches, args=(False,), daemon=True).start()   # fill the summary cache in the background at start-up
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
 
 

@@ -29,8 +29,9 @@ def ensure_ram():
 
 def use_starts(name):
     """Makes replays of this batch load the starts it was played from."""
-    level = json.load(open(os.path.join(RUNS, name, "meta.json"))).get("level", 1)
-    os.environ["START_PREFIX"] = "s" if level == 1 else f"l{level}_"
+    meta = json.load(open(os.path.join(RUNS, name, "meta.json")))
+    level, board = meta.get("level", 1), meta.get("board", 1)
+    os.environ["START_PREFIX"] = f"r{level}_" if board == 4 else ("s" if level == 1 else f"l{level}_")
     os.environ["LEVEL"] = str(level)
 
 
@@ -75,7 +76,27 @@ def totals():
         tmp = path + ".tmp"
         json.dump(t, open(tmp, "w"))
         os.replace(tmp, path)
-    return {"games": games, "clears": clears}
+    # replays from the analysis tools (reviews, play-outs, scenario tests: each plays a game on from a chosen moment): the past from
+    # their logs (a lower bound), and every replay since 2026-11-20 counted by scenario_test.run_rows (Matt: show the true number)
+    try:
+        r = json.load(open(os.path.join(RUNS, "replays.json")))
+        replays = r.get("historic", 0) + r.get("live", 0)
+    except (OSError, ValueError):
+        replays = 0
+    return {"games": games, "clears": clears, "replays": replays}
+
+
+def count_replays(n):
+    """Adds n to the replay tally (runs/replays.json)."""
+    path = os.path.join(RUNS, "replays.json")
+    try:
+        r = json.load(open(path))
+    except (OSError, ValueError):
+        r = {"historic": 0, "live": 0}
+    r["live"] = r.get("live", 0) + n
+    tmp = path + ".tmp"
+    json.dump(r, open(tmp, "w"))
+    os.replace(tmp, path)
 
 
 def wilson_low(hits, n, z=1.96):
@@ -99,12 +120,19 @@ def summary(games):
     goal = sum(g["score"] >= GOAL_SCORE for g in clears)
     scores = sorted(g["score"] for g in clears)
     causes, floors = {}, {}
+    # rivet board games (they carry rivets_left): girders numbered as on that board (from Mario's y), and how far he'd got
+    rivet = any("rivets_left" in g for g in games)
+    rgird = lambda y: min(range(1, 6), key=lambda i: abs((240, 200, 160, 120, 80)[i - 1] - y))
     for g in games:
         if g["outcome"] != "clear":
-            k = f'{g["outcome"]}: {g["cause"]} while {g["doing"]}, floor {g["floor"]}'
+            if rivet and "rivets_left" in g:
+                k = f'{g["outcome"]}: {g["cause"]} while {g["doing"]}, girder {rgird(g["y"])}, {8 - g["rivets_left"]} rivets pulled'
+            else:
+                k = f'{g["outcome"]}: {g["cause"]} while {g["doing"]}, floor {g["floor"]}'
             causes[k] = causes.get(k, 0) + 1
         floors[g["floor"]] = floors.get(g["floor"], 0) + 1
     return {
+        "rivet": rivet,
         "games": total,
         "fireball_deaths": fire,
         "clear_rate_all": len(clears) / total if total else 0,

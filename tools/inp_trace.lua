@@ -7,6 +7,7 @@
 local mac = manager.machine
 local OUT = io.open(os.getenv("TRACE"), "w")
 local MINLEVEL = tonumber(os.getenv("MINLEVEL") or 5)
+local BOARD = tonumber(os.getenv("BOARD") or 1)   -- (2026-11-15) 4: trace the rivet boards instead
 local sp, n, pm, id, on, kp, kpf = nil, 0, nil, 0, false, nil, 0
 local function r(a) return sp:readv_u8(a) end
 local function bcd(v) return (v >> 4) * 10 + (v & 15) end
@@ -21,7 +22,7 @@ emu.register_frame_done(function()
   local m = r(0x600A)
   if m == 0x0C and pm ~= 0x0C then
     OUT:write(string.format("start level %d board %d lives %d score %d frame %d\n", r(0x6229), r(0x6227), r(0x6228), score(), n))
-    on = r(0x6227) == 1 and r(0x6229) >= MINLEVEL
+    on = r(0x6227) == BOARD and r(0x6229) >= MINLEVEL
     if on then id = id + 1; OUT:write(string.format("board %d level %d score %d frame %d\n", id, r(0x6229), score(), n)) end
   end
   if on and m ~= 0x0C then
@@ -44,6 +45,7 @@ emu.register_frame_done(function()
   end
   p[#p + 1] = string.format("K %d %d %d", kong, n - kpf, r(0x601A))
   p[#p + 1] = string.format("H %d %d", r(0x6680), r(0x6681))
+  if BOARD == 4 then p[#p + 1] = string.format("R %d %d %d", r(0x6290), r(0x6690), r(0x6691)) end   -- rivets left; the top hammer (on, held)
   OUT:write(table.concat(p, "|"), "\n")
 end)
 emu.add_machine_stop_notifier(function() if on then OUT:write(string.format("end %d score %d frame %d\n", id, score(), n)) end; OUT:close() end)

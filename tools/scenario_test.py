@@ -9,7 +9,7 @@ import argparse, collections, glob, json, os, subprocess, sys, tempfile
 H = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def run_rows(rows, level, sets=(), workers=8, inputs=False):
+def run_rows(rows, level, sets=(), workers=8, inputs=False, full=False, prefix=None):
     """rows: (game_id, takeover_frame, trial, inputs[, "a w j1 j2 h"]). Returns each row's outcome, in order."""
     tmp = tempfile.mkdtemp(dir=os.environ.get("CLAUDE_JOB_DIR") and os.environ["CLAUDE_JOB_DIR"] + "/tmp")
     scen = f"{tmp}/scen.txt"
@@ -24,7 +24,7 @@ def run_rows(rows, level, sets=(), workers=8, inputs=False):
     procs = []
     for w in range(workers):
         env = dict(os.environ, DKH=H, MODE="scenario", SCEN=scen, START_ID=str(w), STEP=str(workers), LAST=str(len(rows) - 1), OUT=f"{tmp}/out_{w}.jsonl",
-                   PARAMS=params, WORKER=str(w), LEVEL=str(level), START_PREFIX="s" if level == 1 else f"l{level}_",
+                   PARAMS=params, WORKER=str(w), LEVEL=str(level), START_PREFIX=prefix or ("s" if level == 1 else f"l{level}_"),
                    DKX_ROMS=os.path.expanduser("~/dkx-build/DK-x86-AI/dkx/roms"), DKH_STATES=f"{H}/native/starts")
         if not inputs:
             env["NO_INPUTS"] = "1"
@@ -33,11 +33,15 @@ def run_rows(rows, level, sets=(), workers=8, inputs=False):
         procs.append(subprocess.Popen([f"{H}/native/build/dkh", f"{H}/lua/agent.lua"], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
     for p in procs:
         p.wait()
+    try:
+        import stats; stats.count_replays(len(rows))   # (the dashboard's replay tally)
+    except Exception:
+        pass
     res = [None] * len(rows)
     for p in glob.glob(f"{tmp}/out_*.jsonl"):
         for l in open(p):
             o = json.loads(l)
-            res[o["id"]] = (o["outcome"], o["inp"], o["frames"]) if inputs else o["outcome"]
+            res[o["id"]] = o if full else ((o["outcome"], o["inp"], o["frames"]) if inputs else o["outcome"])   # full: the whole record
     return res
 
 

@@ -32,6 +32,8 @@ def main():
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--note", default="")
     ap.add_argument("--first", type=int, default=0, help="first game number, for testing on a fresh set of games")
+    ap.add_argument("--board", type=int, default=1, help="4: start on the level's rivet board (starts r<level>_)")
+    ap.add_argument("--stall", type=int, default=0, help="seconds without a result before the batch counts as stuck (default 120; slow players, e.g. RSEARCH, need more)")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE", help="override a rule for this batch only (Lua value)")
     ap.add_argument("--level", type=int, default=1, help="level whose first barrel board to play (needs make_starts.py --level N)")
     ap.add_argument("--no-inputs", action="store_true", help="don't save each game's inputs (uses far less disk, but those games can't be replayed)")
@@ -48,7 +50,7 @@ def main():
         os.rename(f"{d}/lua/params.lua", f"{d}/lua/params_base.lua")
         lines = [f'local p = dofile("{d}/lua/params_base.lua")'] + [f"for _, l in pairs(p.levels or {{}}) do l.{kv.split('=', 1)[0]} = nil end\np.{kv.split('=', 1)[0]} = {kv.split('=', 1)[1]}" for kv in a.set] + ["return p"]   # a setting for this batch beats the level's own
         open(f"{d}/lua/params.lua", "w").write("\n".join(lines) + "\n")
-    json.dump({"name": a.name, "games": a.games, "workers": a.workers, "note": a.note, "level": a.level, "native": a.native, "started": time.time()}, open(f"{d}/meta.json", "w"))
+    json.dump({"name": a.name, "games": a.games, "workers": a.workers, "note": a.note, "level": a.level, "board": a.board, "native": a.native, "started": time.time()}, open(f"{d}/meta.json", "w"))
     stats.ensure_ram()
     GRID = stats.grid_dir()
     shutil.rmtree(GRID, ignore_errors=True)
@@ -57,7 +59,7 @@ def main():
     procs = []
     for w in range(a.workers):
         env = dict(os.environ, DKH=H, MODE="batch", START_ID=str(a.first + w), STEP=str(a.workers), LAST=str(a.first + a.games - 1), OUT=f"{d}/games_{w}.jsonl",
-                   PARAMS=f"{d}/lua/params.lua", WORKER=str(w), LEVEL=str(a.level), START_PREFIX="s" if a.level == 1 else f"l{a.level}_")
+                   PARAMS=f"{d}/lua/params.lua", WORKER=str(w), LEVEL=str(a.level), START_PREFIX=(f"r{a.level}_" if a.board == 4 else "s" if a.level == 1 else f"l{a.level}_"))
         if a.no_inputs:
             env["NO_INPUTS"] = "1"
         if not a.no_grid:
@@ -78,7 +80,7 @@ def main():
         size = sum(os.path.getsize(f) for f in glob.glob(f"{d}/games_*.jsonl"))
         if size != last_size:
             last_size, last_change = size, time.time()
-        elif time.time() - last_change > STALL_SECONDS:
+        elif time.time() - last_change > (a.stall or STALL_SECONDS):
             stalled = True
             for p in procs:
                 p.kill()

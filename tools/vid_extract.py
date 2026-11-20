@@ -9,8 +9,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from vid_objects import objects
 
 VID = sys.argv[1]; D = os.path.dirname(os.path.abspath(VID))
-cuts = list(np.load(f"{D}/boards.npy")) + [None]
-VF = "crop=634:712:339:0,scale=256:256:flags=area"
+_b = np.load(f"{D}/boards.npy")
+if _b.ndim == 2:     # (start, end) pairs, in 10 fps scan frames (a video with other boards between the barrel boards)
+    cuts, ends = [int(x) for x in _b[:, 0]], [int(x) for x in _b[:, 1]]
+else:
+    cuts, ends = list(_b), None
+cuts = cuts + [None]
+VF = f"crop={os.environ.get('VCROP', '634:712:339:0')},scale=256:256:flags=area"   # VCROP: w:h:x:y of the playfield, 1 game unit = 1 px after scaling
 os.makedirs(f"{D}/raw", exist_ok=True)
 
 
@@ -27,7 +32,7 @@ def frames(t0, dur, fps=None):
 
 for bi in range(int(sys.argv[2]), int(sys.argv[3]) + 1):
     t0 = cuts[bi] / 10 + 0.5
-    t1 = (cuts[bi + 1] / 10 - 0.5) if cuts[bi + 1] is not None else t0 + 300
+    t1 = (ends[bi] / 10 - 0.5) if ends else ((cuts[bi + 1] / 10 - 0.5) if cuts[bi + 1] is not None else t0 + 300)
     bg = np.median(np.stack(list(frames(t0, t1 - t0, fps=0.5))), axis=0).astype(np.uint8)
     out = open(f"{D}/raw/{bi:02d}.txt.part", "w")
     for i, f in enumerate(frames(t0, t1 - t0)):

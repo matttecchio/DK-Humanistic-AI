@@ -17,6 +17,7 @@ def main():
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--offsets", default="0")
     ap.add_argument("--set", action="append", default=[])
+    ap.add_argument("--ladder", action="store_true", help="on a ladder: climb / climb steering left or right / stop and steer / back down")
     a = ap.parse_args()
     # on the website's live boards, like every test (Matt: viewers watch them), with a status line
     import stats, shutil, subprocess
@@ -31,6 +32,8 @@ def main():
             if e.startswith(f"seen {a.name}@"):
                 inst.append((gid, int(e.split("@")[1].split(":")[0])))
     moves = [""] + [ms(m) for m in MOVES] + ["0 20 nil nil nil", "0 40 nil nil nil"]
+    if a.ladder:   # stick masks: 4 up, 5 up+left, 6 up+right, 8 down, 9 down+left, 10 down+right, 1 / 2 stop and steer, 0 stop
+        moves = [""] + [f"{m} {w} nil nil nil" for m in (4, 5, 6, 8, 9, 10, 1, 2, 0) for w in (10, 20, 40)]
     offs = [int(x) for x in a.offsets.split(",")]
     # 1. no move at every instance: which ones matter (no move sometimes dies)?
     rows0 = [(gid, f + off, t, games[gid]["inp"], "") for gid, f in inst for off in offs for t in range(a.seeds)]

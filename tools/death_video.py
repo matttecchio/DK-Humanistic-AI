@@ -34,7 +34,7 @@ def main():
     deaths = [g for g in stats.load(batch, inputs=True) if g["outcome"] == "died"]
     before, after, captions = BEFORE, AFTER, {}
     if review:
-        before, after = 240, 240
+        before, after = int(os.environ.get("REVIEW_BEFORE", 240)), 240   # (REVIEW_BEFORE: more lead-in when the mistake may be earlier)
         captions = {int(l.split(None, 1)[0]): l.split(None, 1)[1].strip() for l in open(review) if l.strip()}
         by_id = {g["id"]: g for g in deaths}
         chosen = [by_id[i] for i in captions]

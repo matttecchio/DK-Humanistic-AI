@@ -29,7 +29,7 @@ ul{list-style:none;margin:0;padding:0}li{display:flex;gap:8px;justify-content:sp
 <div class="side" id="left"></div>
 <div class="mid">
   <div><h1>DK Barrel Lab</h1><p class="sub"><span id="lvl">Level 5-1</span> AI · human reactions (133–150 ms)</p></div>
-  <div class="panel hero"><b id="clear">–</b><span>of games cleared, not counting fireball deaths</span>
+  <div class="panel hero"><b id="clear">–</b><span id="clearlab">of games cleared, not counting fireball deaths</span>
     <div class="bar" aria-hidden="true"><i id="clearBar" style="width:0"></i><em style="left:95.2%"></em></div>
     <span id="goalTxt">Goal: 95.2% at 9,500+</span><br><span id="fireTxt"></span></div>
   <div class="panel"><h2>All time</h2><div class="stats" id="ever"></div></div>
@@ -44,7 +44,9 @@ ul{list-style:none;margin:0;padding:0}li{display:flex;gap:8px;justify-content:sp
 <script>
 const $=id=>document.getElementById(id),fmt=n=>Number(n).toLocaleString(),p=x=>(100*x).toFixed(1)+'%';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const bg=new Image();bg.src='/bg.png';
+const bg=new Image();bg.src='/bg.png';const bgR=new Image();bgR.src='/bg_rivets.png';const bgI=new Image();bgI.src='/bg_rivets_items.png';
+// rivet board items, as cut from bg_rivets_items.png: hat, handbag, umbrella, bottom hammer, middle hammer (x, y, w, h)
+const ITEMS=[[197,199,15,8],[127,238,9,9],[28,72,16,15],[8,138,9,10],[105,98,9,10]];
 const DX=-15.5,DY=0;
 // Sprites: each letter is a palette colour, '.' is see-through
 const PAL={r:'#e5392b',b:'#2f52e0',s:'#ffc68c',k:'#6b3a12',w:'#ffffff',o:'#e8862a',d:'#8a4a14',l:'#4fb4ff',n:'#1c3fb0',m:'#ff3dd2',y:'#ffe14d',f:'#ff7a1a',g:'#c8c8c8'};
@@ -73,13 +75,22 @@ for(const [n,label] of [['mario','Mario'],['barrel','Barrel'],['blue','Blue'],['
 // four boards a side, always in the same seats
 for(let w=0;w<8;w++){const d=document.createElement('div');d.className='card';d.id='c'+w;d.innerHTML='<canvas width="224" height="256" aria-label="Game board"></canvas><p>Waiting for a batch</p>';$(w<4?'left':'right').append(d)}
 function paint(c,g){const x=c.querySelector('canvas').getContext('2d');x.imageSmoothingEnabled=false;
-  if(bg.complete&&bg.naturalWidth)x.drawImage(bg,0,0);else{x.fillStyle='#000';x.fillRect(0,0,224,256)}
+  const B=(g&&g.board===4)?bgR:bg;   // (no game yet: the barrel board)
+  if(B.complete&&B.naturalWidth)x.drawImage(B,0,0);else{x.fillStyle='#000';x.fillRect(0,0,224,256)}
+  // rivet board: blank each rivet already pulled (its 8 px column on its girder, and the cap above it)
+  if(g&&g.board===4&&g.it&&bgI.complete)g.it.forEach((on,i)=>{if(on){const [a,b,w,h]=ITEMS[i];x.drawImage(bgI,a,b,w,h,a,b,w,h)}});
+  if(g&&g.board===4&&g.rv){x.fillStyle='#000';const RY=[208,168,128,88],RX=[72,176];g.rv.forEach((on,i)=>{if(!on)x.fillRect(RX[i%2]+DX+0.5,RY[i>>1]-8,8,16)})}
   if(!g)return;
   score(x,g.score);bonus(x,g.timer);levelNo(x,g.level||1);
   for(const [a,b,blue,wild] of g.b)draw(x,wild?(blue?'wildblue':'wild'):(blue?'blue':'barrel'),a+DX,b-1);
   for(const [a,b] of g.f)draw(x,'fire',a+DX,b+1);
   const prev=faces[g.w];if(prev&&g.x!==prev.x)prev.flip=g.x<prev.x;faces[g.w]={x:g.x,flip:prev?prev.flip:false};
-  draw(x,'mario',g.x+DX,g.y+DY,faces[g.w].flip);if(g.ham)draw(x,'hammer',g.x+DX+(faces[g.w].flip?-9:9),g.y+DY-8)}
+  draw(x,'mario',g.x+DX,g.y+DY,faces[g.w].flip);
+  // the hammer he holds, where the game has it: the game's own picture (cut from the items image), upright when raised, turned
+  // to point the way he faces when it's down
+  if(g.hm&&g.hm.length===3&&bgI.complete){const [hx,hy,down]=g.hm,[sx,sy,w,h]=ITEMS[3],cx=hx+DX,cy=hy-1;
+    x.save();x.translate(cx,cy);if(down)x.rotate(hx>g.x?Math.PI/2:-Math.PI/2);x.drawImage(bgI,sx,sy,w,h,-w/2,-h/2,w,h);x.restore()}
+  else if(g.ham)draw(x,'hammer',g.x+DX+(faces[g.w].flip?-9:9),g.y+DY-8)}
 bg.onload=()=>{for(let w=0;w<8;w++)paint($('c'+w),null)};
 async function grid(){let d=[];try{d=await (await fetch('/api/grid')).json()}catch(e){}
   const by={};for(const g of d)by[g.w]=g;if(d[0])$('lvl').textContent=`Level ${d[0].level||1}-1`;
@@ -90,12 +101,15 @@ async function grid(){let d=[];try{d=await (await fetch('/api/grid')).json()}cat
 let busy=false;(function tick(){if(busy){requestAnimationFrame(tick);return}busy=true;grid().finally(()=>{busy=false;requestAnimationFrame(tick)})})();
 async function stats(){let all=[];try{all=await (await fetch('/api/batches')).json()}catch(e){return}
   const b=all[0];if(!b)return;
-  $('clear').textContent=p(b.clear_rate);$('clear').className=b.clear_rate>=b.goal_target?'good':'';$('clearBar').style.width=Math.min(100,100*b.clear_rate)+'%';
+  // rivet boards: nearly every death there is a fireball, so the headline counts them (the barrel boards' leaves them out)
+  const cr=b.rivet?b.clear_rate_all:b.clear_rate;
+  $('clearlab').textContent=b.rivet?'of rivet boards cleared (fireball deaths counted)':'of games cleared, not counting fireball deaths';
+  $('clear').textContent=p(cr);$('clear').className=cr>=b.goal_target?'good':'';$('clearBar').style.width=Math.min(100,100*cr)+'%';
   $('goalTxt').textContent=`Goal: ${p(b.goal_target)} at 9,500+ · now ${p(b.goal_rate)}`;
   $('fireTxt').textContent=`Fireball deaths: ${p(b.games?b.fireball_deaths/b.games:0)} of games (${fmt(b.fireball_deaths)})`;
   $('stats').innerHTML=[['Games in this test',fmt(b.games)],['Boards cleared',fmt(b.clears)],['Median clear score',fmt(b.score_median)],['Best clear',fmt(b.score_max)]].map(([k,v])=>`<div>${esc(k)}<b>${esc(v)}</b></div>`).join('');
   $('causes').innerHTML=(b.causes.length?b.causes:[['No failures',0]]).slice(0,6).map(([k,v])=>`<li><span>${esc(k.replace('died: ','').replace('fall_or_unknown','fall'))}</span><span>${v?p(v/b.games):''}</span></li>`).join('');
-  $('hist').innerHTML=all.slice(0,2).map(x=>`<li><span>${esc(x.note||x.name)}</span><span>${p(x.clear_rate)}</span></li>`).join('')}
+  $('hist').innerHTML=all.slice(0,2).map(x=>`<li><span>${esc(x.note||x.name)}</span><span>${p(x.rivet?x.clear_rate_all:x.clear_rate)}</span></li>`).join('')}
 async function status(){try{const s=await (await fetch('/api/status')).json();
   $('status').innerHTML=s.slice(-3).reverse().map(x=>`<li>${esc(x.text)}</li>`).join('')||'<li>Waiting for the next step</li>'}catch(e){}}
 status();setInterval(status,3000);
@@ -103,7 +117,7 @@ status();setInterval(status,3000);
 let version;async function checkVersion(){try{const v=await (await fetch('/api/version')).json();if(version&&v!==version)location.reload();version=v}catch(e){}}
 checkVersion();setInterval(checkVersion,10000);
 async function ever(){try{const t=await (await fetch('/api/totals')).json();
-  $('ever').innerHTML=[['Total games played',fmt(t.games)],['Total boards cleared',fmt(t.clears)]].map(([k,v])=>`<div>${esc(k)}<b>${esc(v)}</b></div>`).join('')}catch(e){}}
+  $('ever').innerHTML=[['Total games played',fmt(t.games)],['Total boards cleared',fmt(t.clears)],['Replays from the analysis tools',fmt(t.replays||0)],['Everything played',fmt(t.games+(t.replays||0))]].map(([k,v])=>`<div>${esc(k)}<b>${esc(v)}</b></div>`).join('')}catch(e){}}
 ever();setInterval(ever,4000);
 stats();setInterval(stats,4000);
 </script></body></html>

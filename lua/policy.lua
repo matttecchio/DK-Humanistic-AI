@@ -2,6 +2,9 @@
 -- every few frames, like a person would. It predicts where hazards are going, including any
 -- ladder a barrel might take, and only commits to a move that stays clear of all of them.
 local P = {}
+DBGHAM = os.getenv("DBGHAM")
+PLANDBG = os.getenv("PLANDBG") and {tonumber(os.getenv("PLANDBG"):match("^(%d+)")), tonumber(os.getenv("PLANDBG"):match("(%d+)$"))}
+DANGER = nil
 local LEFT, RIGHT, UP, DOWN, JUMP = 1, 2, 4, 8, 16
 
 -- Measured from traced games.
@@ -79,6 +82,7 @@ local WAITS_FINE = {0, 2, 4, 6, 8, 10, 12, 16, 20, 25, 30, 37, 44}   -- (fine_wa
 
 local PREDLOG = os.getenv("PREDLOG") and io.open(os.getenv("PREDLOG"), "a")
 function P.new(params)
+  if params.danger and not DANGER then DANGER = dofile(params.danger_file or ((os.getenv("DKH") or ".") .. "/cases/danger.lua")) end
   for fl = 1, 6 do
     if params["arrive" .. fl] then P.ROUTE[fl].arrive = params["arrive" .. fl] end
   end
@@ -371,6 +375,11 @@ function P.new(params)
             end
           end
           c.wild_dyn[#c.wild_dyn + 1] = {px, py, pv, fall, rest, lvl, sp, pend and 1 or 0}
+          -- kong_straight_seen (Matt's review 3 #4): a wild just out of Kong whose way he hasn't seen yet may drop straight down at
+          -- x=59 (19% measured) instead of drifting to him: he allows for that too, only on that first fall, only until he's seen it move
+          if params.kong_straight_seen and (not wt or not wt.vx) and b.y < 100 and math.abs(b.x - 59) <= 3 then
+            c.wild_dyn[#c.wild_dyn + 1] = {b.x, py, 0, fall, rest, lvl, sp, 0}
+          end
         end
         local function wild_sides_paths(sides, use_new, tag)
           local wt_spd, wt_toward = params.wild_spd, params.wild_toward
@@ -606,6 +615,11 @@ function P.new(params)
           -- pull_gap: not a ladder that drops it on to his own girder just ahead of him: it rolls straight back at him
           local near = params.pull_gap and lb == here + 1 and math.abs(d - mx) < params.pull_gap and (not params.steer_here or params.steer_here[here])
           if (d - mx) * L.dir > 0 and ahead >= -1 and ahead <= (params.steer_pull or 3) and not near then return L.dir > 0 and RIGHT or LEFT end
+          -- pull_upstream (px, 2026-11-13: the experts also pull barrels down a ladder on the other side 50-61% of the time from 17-48 px,
+          -- he 16%): the same, for a ladder upstream at least that far from him, so the barrel lands with room to deal with it
+          if params.pull_upstream and (d - mx) * L.dir < 0 and math.abs(d - mx) >= params.pull_upstream and ahead >= -1 and ahead <= (params.steer_pull or 3) and not near then
+            return d > mx and RIGHT or LEFT
+          end
         end
       end
     end
@@ -757,11 +771,19 @@ function P.new(params)
     local floor = P.floor(o.y)
     if o.jmp ~= 0 and c.ground_floor then floor = c.ground_floor end   -- what he sees is still mid-air
     c.mario_floor = floor
+    -- (PREDLOG) every 8th frame or so; his decisions don't come every frame, so "f % 8 == 0" stopped once they fell on odd frames
+    local predlog_now = PREDLOG and f - (c.pred_logged or -99) >= 8
+    if predlog_now then c.pred_logged = f end
+    -- ham_grab {from x, to x, bonus} (2026-11-14): the top hammer is there to take, and the planner takes it with a straight jump
+    -- grab_on: the hammer is there, so a jump over it takes it (the game's rule, wanted or not); grab_want: he means to take it
+    local hg = params.ham_plan and params.ham_grab
+    c.grab_on = hg and o.hamtop == 1 and o.ham == 0 and o.lad == 0 and floor == 5 and hg or nil
+    c.grab_want = c.grab_on and params.ham_top and not c.ham_used and hg or nil
     for _, b in ipairs(o.b) do
       if b.y - o.y < 48 and o.y - b.y < 90 then   -- anything further can't matter within the horizon
         local ps = barrel_paths(b, b.vx, b.vy, age)
-        for i = 1, #ps do paths[#paths + 1] = ps[i] end
-        if PREDLOG and f % 8 == 0 then   -- (PREDLOG) what he predicts for each barrel, to measure against what happens
+        for i = 1, #ps do ps[i].bk = b.k; paths[#paths + 1] = ps[i] end   -- bk: which barrel (ham_plan: a smash takes all its paths)
+        if predlog_now then   -- (PREDLOG) what he predicts for each barrel, to measure against what happens
           for i = 1, #ps do
             local t = {"P", f, b.k, b.c, b.d, ps[i].maybe and 1 or 0, ps[i].lad or 0}
             for _, st in ipairs({0, 4, 8, 16, 24}) do t[#t + 1] = ps[i][st * 2 + 1] and string.format("%.1f,%.1f", ps[i][st * 2 + 1], ps[i][st * 2 + 2]) or "-" end
@@ -824,6 +846,9 @@ function P.new(params)
         -- kong_aim (difficulty 5): Kong's wild barrel leaves aimed at Mario, at (his x - 59) / 64 px a frame
         local aim = params.kong_aim and (params.kong_aim_top and floor >= 5 and params.kong_aim_top or params.kong_aim)   -- kong_aim_top: on the top two girders
         local rays = aim and {{((c.mario_x or 120) - 59) / 64, aim}} or params.kong_rays or KONG_RAYS
+        -- kong_straight (Matt's review 3 #4, measured 2026-11-13: of Kong's wild barrels 81% leave aimed at Mario, 19% drop
+        -- straight down at x=59): that chance as a ray of its own
+        if aim and params.kong_straight then rays = {rays[1], {0, params.kong_straight}} end
         for _, ray in ipairs(rays) do   -- (kong_rays: how they leave Kong on this level, measured)
           local path = {wild = true, ray = true, maybe = true, imagined = true, prob = ray[2] * params.kong_chance, commit = math.max(t0, 0)}
           paths[#paths + 1] = path
@@ -987,16 +1012,18 @@ function P.new(params)
     local away = params["standoff" .. floor] or params.standoff
     local near = dist <= away + 4
     local can_climb = false
-    if near and o.ham == 0 then
+    if near and o.ham == 0 and not c.grab_want then   -- (ham_grab: the edge under the hammer is no ladder)
       local climb_frames = math.floor(dist / WALK + (mario_y(floor, r.x) - r.top) / CLIMB) + (params["after_climb" .. floor] or params.after_climb)
       can_climb = not first_hit({kind = "approach", lx = r.x, top = r.top, ym = params.climb_ym, xm = params.climb_xm}, paths, fires, x0, y0, floor, climb_frames)
     end
     if can_climb and dist <= 2 then
       c.plan = UP; c.why = "climb"; c.up_until = f + 14; c.cur_dir = nil; return UP
     end
-    local target = (near and not can_climb) and (r.x + r.arrive * away) or r.x
+    local target = (near and not can_climb and not c.grab_want) and (r.x + r.arrive * away) or r.x   -- (ham_grab: right to the edge)
     local dirn = target > x0 and 1 or -1
     local at_ladder = math.abs(target - x0) <= 2
+    c.dirn_now = (at_ladder and 0) or dirn   -- (LOOKAHEAD) where his plans carry on to
+    c.target_now = target; c.floor_now = floor
     c.cur_dir = nil
 
     -- Compare short plans: carry on, wait or back off for a moment, then jump, then perhaps jump again.
@@ -1082,6 +1109,9 @@ function P.new(params)
       if NATIVE and not params.stick_odds then
         if params.dbgnative_at then params.dbgnative = (params.dbg and params.dbg(c.f_now)) and params.dbgnative_at or nil end   -- (why_plan) only at the frames asked about
         NATIVE.fill(paths, floor_y); NATIVE.set_ctx(params, x0, y0, floor, dirn, target, o.ham, age, fires)
+        -- ham_plan (2026-11-14): holding the hammer, the plan check knows its swing (o.hcnt), which way he faces and how long it lasts
+        if params.ham_plan and o.ham ~= 0 and o.hcnt then NATIVE.set_ham(o.hcnt, o.face or 1, o.hleft or 512) else NATIVE.set_ham() end
+        if c.grab_on then NATIVE.set_grab(c.grab_on[1], c.grab_on[2], o.face or 1) else NATIVE.set_grab() end
         NATIVE.set_wild(params.wild_dynamic and c.wild_dyn or {}, floor_y, params.wild_pre and c.oil == 0 and params.wild_pre or nil)
         return
       end
@@ -1121,6 +1151,25 @@ function P.new(params)
       for _, b in ipairs(o.b) do
         if b.c == 0 and b.d ~= 2 and b.d ~= 4 and b.y < y0 then
           for _, d in ipairs(DROPS[floor + 1] or {}) do if math.abs(b.x - d) <= 3 then under_lads[d] = true end end
+        end
+      end
+    end
+    -- under_end {px, cost, soon}: ladders above him that a barrel on the girder above will reach within `soon` frames, or one
+    -- is on now (the experts are rarely under a ladder as a barrel arrives above it: 12-19% of those moments, he 34%)
+    local soon_lads = {}
+    local ue = params.under_end
+    if ue then
+      for _, b in ipairs(o.b) do
+        if b.c == 0 and level_of(b.y) == floor + 1 then
+          if b.d == 2 or b.d == 4 then
+            local side = b.d == 2 and 1 or -1
+            for _, d in ipairs(DROPS[floor + 1] or {}) do
+              local fr = ((d - b.x) * side) / ROLL - age
+              if fr >= -2 and fr <= ue[3] then soon_lads[d] = true end
+            end
+          else
+            for _, d in ipairs(DROPS[floor + 1] or {}) do if math.abs(b.x - d) <= 3 then soon_lads[d] = true end end
+          end
         end
       end
     end
@@ -1271,10 +1320,10 @@ function P.new(params)
       end
       return best_c, last, risk, mx, chance + soft
     end
-    local function try_plan(act, w1, j1, w2, j2, stay, juke)
+    local function try_plan(act, w1, j1, w2, j2, stay, juke, step)
       if NATIVE and not params.stick_odds then   -- compiled, a repeat costs less than looking it up
         local last = j1 and (w1 + JUMP_LEN + (j2 and (w2 + JUMP_LEN) or 0) + (c.extra_tail or params.plan_tail)) or (w1 + tail)
-        return NATIVE.try(act, w1, j1, w2, j2, stay, last, j1 and last or (w1 + params.plan_tail), math.min(last // 2, PLAN_STEPS), juke)
+        return NATIVE.try(act, w1, j1, w2, j2, stay, last, j1 and last or (w1 + params.plan_tail), math.min(last // 2, PLAN_STEPS), juke, step)
       end
       local key = act .. " " .. w1 .. " " .. tostring(j1) .. " " .. tostring(w2) .. " " .. tostring(j2) .. " " .. tostring(stay) .. " " .. tostring(c.extra_tail)
       local r = memo[key]
@@ -1285,10 +1334,12 @@ function P.new(params)
       return table.unpack(r, 1, r.n)
     end
 
-    local function score(cl, risk, xe, last, jumps)
+    local function score(cl, risk, xe, last, jumps, rp)
       local prog = (xe - x0) * dirn / last
+      -- risk_odds: the "might" penalty scaled by the game's odds of it coming down (3/4 with his stick at the ladder, 3/16 without)
+      local rf = (params.risk_odds and rp and rp > 0) and rp / 0.75 or 1
       return (cl > params.clear_cap and params.clear_cap or cl) * params.w_clear + prog * params.w_prog
-        - jumps * params.w_jump - (risk and params.w_risk or 0)
+        - jumps * params.w_jump - (risk and params.w_risk * rf or 0)
     end
 
     local best, best_s, fallback, fallback_t
@@ -1308,14 +1359,51 @@ function P.new(params)
       end
       return false
     end
-    local function consider(act, w1, j1, w2, j2, stay, juke)
+    local function danger_at(x, f, tl, ob)
+      -- the same description as tools/danger_study.py: girder, x in 16 px steps, on the ground, the two nearest barrels on his girder
+      -- rolling at him (12 px steps), a barrel above heading for a ladder near him, a wild near; barrels moved on tl frames
+      local at = {}
+      local above, wild = 0, 0
+      for _, b in ipairs(ob.b) do
+        local lb = level_of(b.y)
+        local bx = b.x
+        if b.c == 0 and (b.d == 2 or b.d == 4) then bx = b.x + (b.d == 2 and 1 or -1) * ROLL * tl end
+        if b.c == 0 and lb == f and ((b.d == 2 and bx < x) or (b.d == 4 and bx > x)) then at[#at + 1] = math.min(math.floor(math.abs(bx - x) / 12), 5) end
+        if b.c == 0 and lb == f + 1 and (b.d == 2 or b.d == 4) then
+          local side = b.d == 2 and 1 or -1
+          for _, d in ipairs(DROPS[f + 1] or {}) do
+            local ahead = (d - bx) * side
+            if ahead >= 0 and ahead <= 30 and math.abs(d - x) <= 24 then
+              if math.abs(d - x) <= 8 then above = 1 elseif above ~= 1 then above = 2 end
+            end
+          end
+        end
+        if b.c ~= 0 and math.abs(b.x - x) <= 60 and b.y < (ob.y or 999) then wild = 1 end
+      end
+      table.sort(at)
+      local key = string.format("%d|%d|g|%s|%d|%d", f, math.floor(x / 16), table.concat({at[1], at[2]}, ","), above, wild)
+      return DANGER.t[key] or DANGER.base
+    end
+    local function consider(act, w1, j1, w2, j2, stay, juke, step)
       -- Just landed: the game ignores a press for a few frames, so the soonest this jump can really start is then.
       if params.jump_ready and j1 and c.jump_ready and f + w1 < c.jump_ready then w1 = c.jump_ready - f end
       -- A press takes a frame or two to become a jump, and he allows for it.
-      local cl, t, risk, xe, chance, follow = try_plan(act, j1 and params.press_lag and w1 + params.press_lag or w1, j1, w2, j2, stay, juke)
+      local cl, t, risk, xe, chance, follow, rp = try_plan(act, j1 and params.press_lag and w1 + params.press_lag or w1, j1, w2, j2, stay, juke, step)
+      if PLANDBG and f >= PLANDBG[1] and f <= PLANDBG[2] and not w2 then   -- (oracle review) every plan he weighs, as he weighed it
+        io.stderr:write(string.format("PLAN f=%d x=%.0f act=%d w1=%d j1=%s %s\n", f, x0, act, w1, tostring(j1), cl and string.format("cl=%.1f risk=%s t=%d", cl, tostring(risk), t) or ("HIT t=" .. tostring(t))))
+      end
       if cl then
-        local v = score(cl, risk, xe, t, (j1 and 1 or 0) + (j2 and 1 or 0)) + w1 * params.w_later - chance * params.w_ray
+        local v = score(cl, risk, xe, t, (j1 and 1 or 0) + (j2 and 1 or 0), rp) + w1 * params.w_later - chance * params.w_ray
+        -- ham_grab: a straight jump that takes the top hammer (the plan check has already seen him through it safely)
+        if c.grab_want and j1 == 0 and not j2 and xe and xe >= c.grab_on[1] and xe <= c.grab_on[2] then v = v + c.grab_on[3] end
+        if c.cands then c.cands[#c.cands + 1] = {act = act, w1 = w1, j1 = j1, w2 = w2, j2 = j2, stay = stay, v = v} end   -- (LOOKAHEAD) the plans he weighed
         if params.w_no_follow and follow == false then v = v - params.w_no_follow end   -- (follow_check) it leaves him with no way on
+        -- danger (2026-11-13, learned from his own games, tools/danger_study.py): how often the spot this plan leaves him in, with the
+        -- barrels moved on to then, ends in a barrel death within 2 s; that chance x params.danger is counted against the plan
+        if params.danger and DANGER and xe then
+          local tl = (j1 and (w1 + JUMP_LEN) or (w1 + 16)) + age
+          v = v - params.danger * danger_at(xe, floor, tl, o)
+        end
         -- With nothing comfortable left, getting away matters and progress doesn't.
         if params.thin_safe and cl < params.min_clear then v = v - (xe - x0) * dirn / t * params.w_prog + cl * params.thin_safe end
         if j1 and j1 ~= 0 then v = v - (params["w_sideways" .. floor] or params.w_sideways) end   -- a straight jump is calmer
@@ -1339,6 +1427,9 @@ function P.new(params)
         if lz and j1 == -1 and floor == lz[1] and x0 >= lz[2] and x0 <= lz[3] then v = v - lz[4] end
         if cl < params.min_clear then v = v - params.w_thin end
         if params.w_no_next and j1 and not j2 and not next_ok(act, w1, j1) then v = v - params.w_no_next end
+        if ue and xe then
+          for d in pairs(soon_lads) do if math.abs(d - xe) <= ue[1] then v = v - ue[2]; break end end
+        end
         if params.w_under and j1 then
           -- Leaving the ground or landing right under a ladder: he can't react if a barrel comes down it, and being there draws them.
           local xa = along(x0, act, w1)
@@ -1352,7 +1443,10 @@ function P.new(params)
             ::next_ladder::
           end
         end
-        if close_dir and j1 == close_dir and not (params.with_needed and stand_ok) and (w1 <= 6 or (c.jump_ready and f + w1 <= c.jump_ready + 2)) and (not params.with_next or j2 or next_ok(act, w1, j1)) and cl >= (params.with_cl or 0) and not (params.with_min_x and along(x0, act, w1) + j1 * JUMP_X * JUMP_LEN < params.with_min_x) then v = v + params.w_with end   -- (with_min_x: not when it lands him near the left corner)   -- now, or as soon as he can after landing
+        if close_dir and j1 == close_dir and not (params.with_needed and stand_ok) and (w1 <= 6 or (c.jump_ready and f + w1 <= c.jump_ready + 2)) and (not params.with_next or j2 or next_ok(act, w1, j1)) and cl >= (params.with_cl or 0) and not (params.with_min_x and along(x0, act, w1) + j1 * JUMP_X * JUMP_LEN < params.with_min_x)
+          -- with_straight (Matt's review 2026-11-11: right jumps where a straight jump was the answer): no bonus for going with
+          -- the barrel when a straight jump at the same moment is just as safe
+          and not (params.with_straight and j1 ~= 0 and (try_plan(act, w1, 0) or -99) >= math.min(cl, params.min_clear)) then v = v + params.w_with end   -- (with_min_x: not when it lands him near the left corner)   -- now, or as soon as he can after landing
         if wild_about and w1 > 0 and c.last_act and c.last_act ~= 0 and act == -c.last_act then v = v - params.w_commit end   -- turning back under a barrel costs ground
         if chase_bd and j1 and w1 <= (params.chase_now or 6) and (params.chase_dir == "any" or j1 == -chase_bd) then v = v + params.chase_w end
         -- jitter: his press can land a frame or two late; a jump that only works if pressed exactly on time is marked down
@@ -1393,7 +1487,7 @@ function P.new(params)
 
     -- He can't jump with a hammer, but it smashes what's in front of him: turn to face what's coming.
     -- ham_ladder: with the hammer, a barrel coming down a ladder close beside him lands where the hammer can't reach: step away from it
-    if params.ham_ladder and o.ham ~= 0 then
+    if params.ham_ladder and o.ham ~= 0 and not params.ham_plan then
       for _, b in ipairs(o.b) do
         if b.c == 0 and b.d ~= 2 and b.d ~= 4 and b.y < y0 and y0 - b.y < 34 and math.abs(b.x - x0) <= params.ham_ladder then
           c.why = "hammer: step away from the ladder"; c.last_act = 0
@@ -1403,7 +1497,7 @@ function P.new(params)
       end
     end
     -- ham_stop (Matt's pro tip): with the hammer, stop just before a barrel rolling at him, so it can't go under the hammer
-    if params.ham_stop and o.ham ~= 0 then
+    if params.ham_stop and o.ham ~= 0 and not params.ham_plan then
       for _, b in ipairs(o.b) do
         if b.c == 0 and (b.d == 2 or b.d == 4) and level_of(b.y) == floor then
           local side = b.d == 2 and 1 or -1
@@ -1423,7 +1517,7 @@ function P.new(params)
       end
       c.ham_faced = nil
     end
-    if params.ham_face and o.ham ~= 0 then
+    if params.ham_face and o.ham ~= 0 and not params.ham_plan then
       local near_dx
       for _, b in ipairs(o.b) do
         local dx = b.x + b.vx * age - x0
@@ -1469,12 +1563,26 @@ function P.new(params)
       local cs = try_plan(0, 0, nil)
       need_jump = not ((cw and cw >= params.min_clear) or (cs and cs >= params.min_clear))
     end
-    if params.ham_face and o.ham ~= 0 then need_jump = false end
+    if (params.ham_face or params.ham_plan) and o.ham ~= 0 then need_jump = false end
+    if c.grab_want then need_jump = true end
     local acts = at_ladder and {0, -dirn} or {dirn, 0, -dirn}
     local function weigh()
       for _, act in ipairs(acts) do
         for _, w1 in ipairs(params.fine_waits and WAITS_FINE or WAITS) do
           consider(act, w1, nil)
+          -- ham_plan: with the hammer, also "step this way w1 frames, then stand" (the step turns him to face what's coming)
+          local extra = params.extra_last and c.extra_on   -- (extra_last) only on a second pass, when nothing else was safe
+          if params.ham_plan and o.ham ~= 0 and act ~= 0 then consider(act, w1, nil, nil, nil, true)
+          -- stand_plans (the oracle review, 2026-11-14: in 15 of the 23 deaths where his planner thought the saving move would be hit,
+          -- the move was a short step and the hit came after it, from carrying on walking): "step this way w1 frames, then stand"
+          elseif (params.stand_plans or extra) and act ~= 0 and w1 > 0 then consider(act, w1, nil, nil, nil, true) end
+          -- step_pause {steps}: step this way a few frames, stand, then jump at w1 (the oracle review's commonest saving move: a short
+          -- step, then the jump when the barrel comes)
+          if (params.step_pause or extra) and act ~= 0 and need_jump then
+            for _, sp in ipairs(params.step_pause or {4, 8}) do
+              if w1 > sp then for _, j1 in ipairs({dirn, 0, -dirn}) do consider(act, w1, j1, nil, nil, nil, nil, sp) end end
+            end
+          end
           -- Matt's juke: stand still, and tap right just as a wild barrel lands, which flings it right
           if params.juke and NATIVE and act == 0 and #c.wild_dyn > 0 then
             consider(0, w1, nil, nil, nil, nil, true)
@@ -1493,6 +1601,9 @@ function P.new(params)
     end
     if params.with_needed then local cs = try_plan(0, 0, nil); stand_ok = cs and cs >= params.min_clear end
     weigh()
+    -- extra_last (the oracle review, 2026-11-14): with no safe plan, also try "step, then stand" and "step, pause, jump" (the saving
+    -- moves his plans couldn't write); weighed everywhere they made him worse (sp01), so only as a last resort
+    if params.extra_last and not best then c.extra_on = true; weigh(); c.extra_on = nil end
     -- keep_jump: the jump he planned a moment ago, at the same moment (his list of waits is coarse, and with a slight
     -- preference for later, re-planning every two frames lets a planned jump keep slipping). w_keep: some loyalty to it.
     local kept = c.kept
@@ -1525,6 +1636,9 @@ function P.new(params)
     if not best and pref_fb and fallback_t and pref_t >= fallback_t - (params.fallback_slack or 6) then fallback = pref_fb end
     local p = best or fallback
     c.why = best and "plan" or "no safe plan"
+    c.best_s = best and best_s or -999   -- (FEATLOG) his planner's score for what he chose
+    if PLANDBG and f >= PLANDBG[1] and f <= PLANDBG[2] then io.stderr:write(string.format("CHOSE f=%d %s act=%s w1=%s j1=%s\n", f, c.why, tostring(best and best.act), tostring(best and best.w1), tostring(best and best.j1))) end
+    if DBGHAM and (o.ham ~= 0 or c.grab_on) then io.stderr:write(string.format("HAM f=%d x=%.1f face=%d cnt=%d age=%d why=%s act=%s w1=%s s=%s\n", f, x0, o.face or 0, o.hcnt or -1, age, c.why, tostring(best and best.act), tostring(best and best.w1), best and string.format("%.1f", best_s) or "-")) end
     c.chosen = best   -- (chase_stop) what he settled on: act, w1, j1
     if params.keep_jump then c.kept = (best and best.j1 and best.w1 > 0) and {act = best.act, at = f + best.w1, j1 = best.j1, floor = floor} or nil end
     if params.top_guard and p.j1 and p.w1 == 0 and o.lad ~= 0 and c.past_top ~= f then
@@ -1564,6 +1678,7 @@ function P.new(params)
     c.last_act = d
     best = {mask = d > 0 and RIGHT or (d < 0 and LEFT or 0)}
     c.plan = best.mask
+    if DBGHAM and o.ham ~= 0 then io.stderr:write(string.format("RET f=%d d=%d act=%s at_ladder=%s dirn=%d target=%s mask=%d\n", f, d, tostring(p.act), tostring(at_ladder), dirn, tostring(target), c.plan)) end
     return c.plan
   end
 
@@ -1651,12 +1766,15 @@ function P.new(params)
     -- ham_hold {x, frames} (Matt): with the top hammer he stands just left of ladder 91 smashing what comes, and only heads right
     -- for the far ladder once he's held it that long (it lasts about 800-1,000 frames)
     local hh = params.ham_hold
-    if hh and o.ham ~= 0 and c.ham_held_from and P.floor(me.y) == 5 and c.now_f - c.ham_held_from < hh[2] then
+    -- hh[3] (Matt, 2026-11-14: a fireball below is a real threat once the hammer runs out): with ham_plan he knows how much hammer is
+    -- left (0x6394/5, which stop during a smash), and heads for the far ladder once less than hh[3] frames of it remain
+    local holding = hh and (params.ham_plan and hh[3] and o.hleft) and o.hleft >= hh[3] or (hh and c.ham_held_from and c.now_f - c.ham_held_from < hh[2])
+    if hh and o.ham ~= 0 and c.ham_held_from and P.floor(me.y) == 5 and holding then
       P.ROUTE[5] = {x = hh[1], top = -999, arrive = 1}
       return false, ht, me
     end
     local on = ht and not c.ham_used and o.hamtop == 1 and o.ham == 0 and o.lad == 0 and P.floor(me.y) == 5
-    P.ROUTE[5] = on and {x = ht[5] or 48, top = -999, arrive = 1} or ROUTE5
+    P.ROUTE[5] = on and {x = (params.ham_plan and params.ham_grab) and ht[1] or ht[5] or 48, top = -999, arrive = 1} or ROUTE5   -- ham_grab: to the edge, the planner jumps
     return on, ht, me
   end
   local function ham_top_move(o, f, age, m, ht, me)
@@ -1720,7 +1838,7 @@ function P.new(params)
     local hon, ht, hme = ham_top_route(o)
     local m = decide(o, f, age)
     P.ROUTE[5] = ROUTE5
-    if hon then m = ham_top_move(o, f, age, m & ~UP, ht, hme) elseif o.ham ~= 0 then c.ham_turned = nil end
+    if hon and not (params.ham_plan and params.ham_grab) then m = ham_top_move(o, f, age, m & ~UP, ht, hme) elseif o.ham ~= 0 then c.ham_turned = nil end
     -- step_with {floor, from x, to x, nearest, furthest, frames}: a barrel on his girder rolling at him this close: a short
     -- step its way first, once per barrel (solved deaths: 14 of 17 near ladder 91's top on 5-1 were a 4-20 frame step left)
     local sw = params.step_with
@@ -1769,7 +1887,7 @@ function P.new(params)
     -- pull_moving (2026-11-10, the experts pull barrels down a downstream ladder 17-48 px away 81-85% of the time, he 8%): also
     -- while walking, not only when standing with nothing to do
     local pull_ok_m = m == 0 or (params.pull_moving and m & (JUMP | UP | DOWN) == 0)
-    if params.steer_pull and pull_ok_m and o.lad == 0 and o.jmp == 0 and not wild_near then
+    if params.steer_pull and pull_ok_m and o.lad == 0 and o.jmp == 0 and not wild_near and not (params.ham_plan and o.ham ~= 0) then
       local pd = (not params.pull_safe or c.pull_ok or c.pull_jump_ok) and pull_dir(o, age)
       if pd and (not params.pull_safe or c.pull_ok) then c.why = c.why .. " steer"; m = pd; c.steering = true
       elseif pd and c.pull_jump_ok and params.steer_air then
@@ -1805,7 +1923,14 @@ function P.new(params)
     -- dir ("L", "R", "e" on a ladder or going over an end, "any"), ladder x and how far short of it from/to (optional)}.
     -- Then he makes that move, once per setup per barrel in the first need.
     for si, st in ipairs(params.setups or {}) do
-      if not c.script and me.lad == 0 and me.jmp == 0 and P.floor(me.y) == st[1] and me.x >= st[2] and me.x <= st[3] then
+      -- st.lad = {y from, y to}: the situation is on a ladder (climbing from girder st[1]), not standing on the girder (Matt's #6 / #9:
+      -- what to do while coming up a ladder, steering the barrels above with the stick)
+      local here_ok = st.lad and (me.lad ~= 0 and me.y >= st.lad[1] and me.y <= st.lad[2])
+                      or (not st.lad and me.lad == 0 and me.jmp == 0 and P.floor(me.y) == st[1])
+      -- st.trouble (Matt's fixes, 2026-11-14): only when his planner is struggling here (its best score last time below this), as it
+      -- was in the death the fix came from; the picture alone matched thousands of ordinary moments
+      if st.trouble and (c.best_s or 999) >= st.trouble then here_ok = false end
+      if not c.script and here_ok and me.x >= st[2] and me.x <= st[3] then
         local all, key = true, nil
         for ni, nd in ipairs(st.needs) do
           local hit = nil
@@ -1932,7 +2057,8 @@ function P.new(params)
       end
     end
     -- Pressing towards a ladder makes a barrel crossing it above far likelier to come down (tested from identical moments), so he lets go as one crosses.
-    if params.steer_off and not c.steering and m & JUMP == 0 and m & (LEFT | RIGHT) ~= 0 and (not params.steer_here or params.steer_here[P.floor(o.y)]) and not (params.steer_calm and c.why ~= "walk") then
+    local ham_planned = params.ham_plan and o.ham ~= 0   -- the planner has the hammer in hand: its turns aren't undone by the steering rules
+    if params.steer_off and not ham_planned and not c.steering and m & JUMP == 0 and m & (LEFT | RIGHT) ~= 0 and (not params.steer_here or params.steer_here[P.floor(o.y)]) and not (params.steer_calm and c.why ~= "walk") then
       local here = P.floor(o.y)
       for _, b in ipairs(o.b) do
         if b.c == 0 and (b.d == 2 or b.d == 4) then

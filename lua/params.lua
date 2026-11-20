@@ -3,19 +3,25 @@ return {
   -- Settings that apply on one level only, so that changes for later boards leave earlier ones exactly as they were.
   levels = {
     [1] = {react = {4, 4}},   -- Matt (2026-11-08): 30 ms reactions on the barrel boards
-    [2] = {react = {4, 4}, know_self = true, w_with = 60, with_drop = true, with_cl = 2, w_risk = 250, climb_ym = 7, jump_ready = 49, press_lag = 2, after_climb2 = 14, after_climb3 = 14, steer_off = 10, steer_here = {[5] = true}, wild_after = 72, ladder4 = 91, ladder4_top = 112, arrive4 = -1, guard_free = 2, w_no_next = 150},
+    [2] = {react = {4, 4}, know_self = true, w_with = 60, with_drop = true, with_cl = 2, w_risk = 250, climb_ym = 7, jump_ready = 49, press_lag = 1, after_climb2 = 14, after_climb3 = 14, steer_off = 10, steer_here = {[5] = true}, wild_after = 72, ladder4 = 91, ladder4_top = 112, arrive4 = -1, guard_free = 2, w_no_next = 150},
     -- 3-1 starts from what worked on 2-1 (same board, faster and wilder barrels)
-    [3] = {react = {4, 4}, ladder_steer = {131, 5, {188}, 3}, steer_zone = {4, 70, 135, 5, 188, 3, true}, know_self = true, ham_tap = true, think_zones = {{4, 70, 100}, {5, 85, 140}}, ham_stop = 24, wild_rom_us = {0.5}, wall_right = {[2] = true}, kong_pose = true, next_drop_climb = {0}, next_drop_pose = true, next_drop_approach = true, steer_air = true, steer_pull = 8, pull_moving = true, pull_safe = true, wild_rom = true, wall_jump = true, kong_rays = {{1, .71}, {1.25, .07}, {1.5, .12}, {1.75, .05}, {2, .06}}, kong_y = 180, ladder_sure = true, wild_dynamic = true, wild_spd = 1, along_fix = true, w_with = 60, with_drop = true, with_cl = 2, w_risk = 250, climb_ym = 7, jump_ready = 49, after_climb2 = 14, after_climb3 = 14, steer_off = 10, steer_here = {[5] = true}, wild_after = 72, ladder4 = 91, ladder4_top = 112, arrive4 = -1, guard_free = 2, w_no_next = 150},
+    [3] = {press_lag = 1, fine_waits = true, face_known = true,  -- (2026-11-15, two fresh checks: 95.16 -> 95.83, 95.23 -> 95.90)
+           react = {4, 4}, ladder_steer = {131, 5, {188}, 3}, steer_zone = {4, 70, 135, 5, 188, 3, true}, know_self = true, ham_tap = true, think_zones = {{4, 70, 100}, {5, 85, 140}}, ham_stop = 24, wild_rom_us = {0.5}, wall_right = {[2] = true}, kong_pose = true, next_drop_climb = {0}, next_drop_pose = true, next_drop_approach = true, steer_air = true, steer_pull = 8, pull_moving = true, pull_safe = true, wild_rom = true, wall_jump = true, kong_rays = {{1, .71}, {1.25, .07}, {1.5, .12}, {1.75, .05}, {2, .06}}, kong_y = 180, ladder_sure = true, wild_dynamic = true, wild_spd = 1, along_fix = true, w_with = 30, with_drop = true, with_cl = 2, w_risk = 250, climb_ym = 7, jump_ready = 49, after_climb2 = 14, after_climb3 = 14, steer_off = 10, steer_here = {[5] = true}, wild_after = 72, ladder4 = 91, ladder4_top = 112, arrive4 = -1, guard_free = 2, w_no_next = 150},
     -- 4-1 starts from what worked on 3-1 (level 3 and later barrel boards share the same wild-barrel rules)
-    [4] = {react = {4, 4}, ladder_steer = {131, 5, {188}, 3}, steer_zone = {4, 70, 135, 5, 188, 3, true}, know_self = true, ham_tap = true, think_zones = {{4, 70, 100}, {5, 85, 140}}, ham_stop = 24, wild_rom_us = {0.5}, wall_right = {[2] = true}, kong_pose = true, next_drop_climb = {0}, next_drop_pose = true, next_drop_approach = true, steer_air = true, steer_pull = 8, pull_moving = true, pull_safe = true, wild_rom = true, wall_jump = true, kong_rays = {{1, .71}, {1.25, .07}, {1.5, .12}, {1.75, .05}, {2, .06}}, kong_y = 180, ladder_sure = true, wild_dynamic = true, wild_spd = 1, along_fix = true, w_with = 60, with_drop = true, with_cl = 2, w_risk = 250, climb_ym = 7, jump_ready = 49, after_climb2 = 14, after_climb3 = 14, steer_off = 10, steer_here = {[5] = true}, wild_after = 72, ladder4 = 91, ladder4_top = 112, arrive4 = -1, guard_free = 2, w_no_next = 150},
+    [4] = {press_lag = 1, react = {4, 4}, ladder_steer = {131, 5, {188}, 3}, steer_zone = {4, 70, 135, 5, 188, 3, true}, know_self = true, ham_tap = true, think_zones = {{4, 70, 100}, {5, 85, 140}}, ham_stop = 24, wild_rom_us = {0.5}, wall_right = {[2] = true}, kong_pose = true, next_drop_climb = {0}, next_drop_pose = true, next_drop_approach = true, steer_air = true, steer_pull = 8, pull_moving = true, pull_safe = true, wild_rom = true, wall_jump = true, kong_rays = {{1, .71}, {1.25, .07}, {1.5, .12}, {1.75, .05}, {2, .06}}, kong_y = 180, ladder_sure = true, wild_dynamic = true, wild_spd = 1, along_fix = true, w_with = 30   --[[ 2026-11-15, two fresh checks: 95.13 -> 95.22, 95.56 -> 95.76 ]], with_drop = true, with_cl = 2, w_risk = 250, climb_ym = 7, jump_ready = 49, after_climb2 = 14, after_climb3 = 14, steer_off = 10, steer_here = {[5] = true}, wild_after = 72, ladder4 = 91, ladder4_top = 112, arrive4 = -1, guard_free = 2, w_no_next = 150},
     -- 5-1 starts from what worked on 4-1 (from level 5 the barrel boards stop changing)
     [5] = {
+      fine_waits = true,   -- finer jump timing so planned jumps don't slip (2026-11-12; fresh 98.27 -> 98.50 / 98.29 -> 98.52; jumping barrel deaths 112 -> 86 / 104 -> 82)
+      press_lag = 1,   -- the planner allows a frame for a jump press to take effect (2026-11-11; fresh 98.43 -> 98.45 / 98.48 -> 98.68, counting fireballs +0.33 / +0.25)
       -- recurring setups (tools/overnight_setups.py, 2026-11-10; fresh checks 97.90 -> 97.95 and 97.56 -> 97.66, saved 20 lost 5):
       -- s1: just off ladder 91, a barrel on Kong's short ladder to his right and one rolling at him 57-72 px away: walk left 20 frames;
       -- s3: a barrel rolling at him 20-28 px away and one going over the end 64-72 px behind: straight jump holding left at once
       face_known = true,   -- with the hammer, press until Mario really faces the barrel (2026-11-10, fresh 97.72 -> 97.86, saved 23 lost 8)
-      setups = {{5,92,98,needs={{1,8,16,"e"},{0,57,72,"L"}},move={a=1,w=20,j1=nil,j2=nil,h=nil},name="s1"},
-                {5,87,94,needs={{0,20,28,"L"},{0,-72,-64,"e"}},move={a=0,w=0,j1=0,j2=nil,h=1},name="s3"}},react = {4, 4}, chase_jump = {5, 120, 150, 22, 30}, air_plan = {5, 74, 100, 10}, ladder_steer = {131, 5, {188}, 3}, steer_zone = {4, 70, 135, 5, 188, 3, true}, know_self = true, under_live = "rolling", w_under = 40, under_zones = {{5, 100, 112}}, ham_tap = true, air_off = 10, climb_nowild = true, think_zones = {{4, 70, 100}, {5, 85, 140}}, ham_ladder = 16, wild_aim = true, kong_aim = 1, ham_stop = 24, wild_rom_us = {0.5}, wall_right = {[2] = true}, kong_pose = true, next_drop_climb = {0}, next_drop_pose = true, next_drop_approach = true, steer_air = true, steer_pull = 8, pull_moving = true, pull_safe = true, wild_rom = true, wall_jump = true, kong_rays = {{1, .71}, {1.25, .07}, {1.5, .12}, {1.75, .05}, {2, .06}}, kong_y = 180, ladder_sure = true, wild_dynamic = true, wild_spd = 1, along_fix = true, w_with = 60, with_drop = true, with_cl = 2, w_risk = 250, climb_ym = 7, jump_ready = 49, after_climb2 = 14, after_climb3 = 14, steer_off = 10, steer_here = {[5] = true}, wild_after = 72, ladder4 = 91, ladder4_top = 112, arrive4 = -1, guard_free = 2, w_no_next = 150},
+      setups = {-- from Matt's reviewed deaths (2026-11-12), every instance tried, two fresh checks where they acted:
+                -- r2 (review 1 #3, near ladder 91's top between barrels): walk left 8, straight jump; 85 saved / 54 lost
+                -- r7 (review 2 #5, by the right ladder with a barrel going over the end): walk left 16, jump right; 79 / 20
+                {5,88,100,needs={{0,19,35,"L"},{0,-30,-14,"L"}},move={a=1,w=8,j1=0,j2=nil,h=1},name="r2"},
+                {5,209,221,needs={{0,12,28,"e"}},move={a=1,w=16,j1=2,j2=nil,h=1},name="r7"}},react = {4, 4}, chase_jump = {5, 120, 150, 22, 30}, air_plan = {5, 74, 100, 10}, ladder_steer = {131, 5, {188}, 3}, steer_zone = {4, 70, 135, 5, 188, 3, true}, know_self = true, under_live = "rolling", w_under = 40, under_zones = {{5, 100, 112}}, ham_tap = true, air_off = 10, climb_nowild = true, think_zones = {{4, 70, 100}, {5, 85, 140}}, ham_ladder = 16, wild_aim = true, kong_aim = 0.81, kong_straight = 0.19, kong_straight_seen = true, ham_stop = 24, wild_rom_us = {0.5}, wall_right = {[2] = true}, kong_pose = true, next_drop_climb = {0}, next_drop_pose = true, next_drop_approach = true, steer_air = true, steer_pull = 8, pull_moving = true, pull_safe = true, wild_rom = true, wall_jump = true, kong_rays = {{1, .71}, {1.25, .07}, {1.5, .12}, {1.75, .05}, {2, .06}}, kong_y = 180, ladder_sure = true, wild_dynamic = true, wild_spd = 1, along_fix = true, w_with = 30, with_drop = true, with_cl = 2, w_risk = 250, climb_ym = 7, jump_ready = 49, after_climb2 = 14, after_climb3 = 14, steer_off = 10, steer_here = {[5] = true}, wild_after = 72, ladder4 = 91, ladder4_top = 112, arrive4 = -1, guard_free = 2, w_no_next = 150},
   },
   wild_model = true,  -- uses the measured way wild barrels rest and fall between girders
   along_fix = false,   -- after a jump past his waiting spot he has to walk back to it, not appear there
@@ -61,6 +67,8 @@ return {
   wild_catch1 = nil,   -- (native) catch a wild barrel up one frame less (measured: the handed-over state was a frame ahead)
   wild_pre = nil,      -- (native) until the oil is lit, wild barrels land and go right at this speed (0xE9/256 = 0.91 from level 3)
   wild_aim = nil,      -- (native, difficulty 5) each wild bounce is aimed at Mario: (his x - its x) / 64 px a frame
+  kong_straight_seen = nil, -- a wild just out of Kong, way not seen yet: also allow for a straight drop at x=59 (first fall only)
+  kong_straight = nil, -- with kong_aim: the chance a wild from Kong drops straight down instead (measured 0.19)
   kong_aim = nil,
   kong_aim_top = nil,  -- the same, on Kong's girder only      -- (difficulty 5) Kong's wild barrels leave aimed at Mario; the value is how often he throws one at that moment
   follow_check = nil,  -- (native) for each plan, check there's still a simple safe move from where it leaves him
@@ -165,6 +173,9 @@ return {
   kong_fix = false,    -- Kong's next barrel is predicted rolling, not as a wild barrel
   ladder_fix = true,  -- a barrel on a ladder is predicted straight down, even in its first moments there
   tail_stay = true,   -- plans can land and stand still, rather than always walking on
+  under_end = nil,    -- {px, cost, soon frames}: a cost for plans that leave him standing under a ladder a barrel above will reach soon
+  with_straight = nil, -- no w_with bonus for a sideways jump when a straight jump then is as safe (Matt)
+  slope_jump = nil,   -- the planner's jumps last a frame longer per pixel he lands lower (downhill), one less landing higher (measured)
   second_straight = true, -- a second jump can go straight up
   land_stall2 = true, -- no walking for the moment after landing, before a second jump
   seconds = {6, 16, 30},  -- frames after landing before a second jump
@@ -200,6 +211,26 @@ return {
   ladder_hold = nil,   -- this close to the top of a ladder he can stop and let barrels roll over
   hold_y = 7.5,        -- how far below a barrel he can hold (contact is within 7)
   hold_for = 40,       -- holding has to stay clear this long
+  riv_jump_hold = true,  -- rivets: hold each jump 3 frames; if still on the girder 6 frames after, decide again (jh1 703 vs 634; fresh fj1 681 vs 643)
+  riv_safe_w = 1,  -- rivets: the whole-board safety map's time to spare where each move leaves him (jg2 755 vs 703; fresh fs1 726 vs 681; 1.5 collapses: 456)
+  riv_ladder_busy = true, riv_ladder_commit = 8,  -- rivets (Matt's review 3): never walk to a ladder a fireball is on; no holding mid-ladder (3,000 games: 2,453 vs 2,408; fresh xe1 2,480 vs 2,442)
+  riv_free_zone = 40, riv_free_where = true,  -- rivets (Matt's review 3): with him on the right and the right side free, skip the middle hammer, up the right to 4R/5R (xa4 2,445 vs 2,408, 42 / 5; fresh xi1 2,504 vs 2,480, 31 / 7; experts: 6 / 6)
+  riv_mc = 1, riv_right = {reach = 3},  -- rivets: imagined futures (the fireball model, native/rivsim.cpp) as a tie-break among safe moves; fireball allowance 3 px after the left sweep (6,000 new games: 5,006 vs 4,933, saved 705 / lost 632)
+  riv_lod_dy = 4,  -- rivets (Matt's review 4, #8): the life-or-death jump only for a fireball at his girder's height, not one coming up the ladder below (10,000 games: 8,325 vs 8,304, saved 34 / lost 13)
+  riv_plan2 = 0.1,  -- rivets: two-step plans by the imagined futures when stuck or in danger (10,000 games: 8,400 vs 8,325; fresh 8,368 vs 8,335; 0.05 / 0: +30 / +34)
+  riv_choice_mc = 0.1,  -- rivets: middle hammer or the rivets, by playing both of his routes forward in the imagined futures (10,000 games: 8,481 vs 8,400, saved 221 / lost 140; 0.05: 8,473)
+  riv_down_mc = 0.15,  -- rivets: after 3R, down the right ladder or back over 3R's gap and down the middle, by the imagined futures (10,000 games: 8,626 vs 8,481, saved 734 / lost 589; 0.05: 8,613)
+  riv_choice_via = "mid",  -- rivets: the hammer choice also weighs the rivets through girder 3's middle (10,000 games: 8,666 vs 8,626; fresh 8,690 vs 8,661)
+  riv_freeze = 120, riv_freeze_short = 16,  -- rivets (Matt): the 2nd / 4th fireballs' own freezes (long at ladder tops ~336 frames; short stops in ~56-frame steps) held still (frz3 8,686 vs 8,666, 190 / 170; kept: Matt, "don't throw away a gain")
+  riv_choice_hop = true,  -- rivets (Matt): in girder 2's middle with 2R out, the hammer choice also weighs hopping right over 2R's gap and up the right (hp1 8,722 vs 8,686, 384 / 348)
+  riv_skip_ham = 100,  -- rivets (Matt): skip the middle hammer when no fireball is in the upper right (y <= 170, x >= this)
+  risk_odds = nil,    -- scale the "might come down" penalty by the game's odds (ladder rule 0x2186): 3/4 with his stick at the ladder, 3/16 without
+  extra_last = nil,   -- with no safe plan, also weigh step-then-stand and step-pause-jump (last resort)
+  stand_plans = nil,  -- also weigh "step this way a moment, then stand" (the oracle review: the saving move he couldn't write)
+  ham_plan = nil,     -- holding the hammer, the planner models its swing and smashes (from the ROM) instead of the hammer rules
+  danger = nil,       -- weight: count the learned danger (cases/danger.lua) of the spot a plan leaves him in against it
+  contingent = nil,   -- a barrel that might come down is a risk only if, once he'd see it commit, he couldn't get away from it
+  pull_upstream = nil, -- px: also pull a barrel down a ladder on the upstream side at least this far from him (the experts do)
   pull_moving = nil,   -- steer_pull also while walking (the experts pull barrels down while on the move)
   steer_pull = nil,    -- frames ahead: standing, tap towards a ladder above that a barrel is about to cross, on the side his girder's barrels roll away to
   steer_air = nil,     -- also steer during a straight jump, when the stick can't move him

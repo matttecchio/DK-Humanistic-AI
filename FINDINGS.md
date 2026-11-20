@@ -1,6 +1,6 @@
 # DK Barrel Lab: findings
 
-What we've learned about playing level 1-1 safely, including what didn't work. `RESULTS_LOG.md` has every test batch's result, added automatically.
+What we've learned about playing the barrel boards (1-1 first, then 2-1 to 5-1) safely, including what didn't work. `RESULTS_LOG.md` has every test batch's result, added automatically.
 
 Coordinates are game memory values. Lower y is higher up the screen. There are 60 frames a second.
 
@@ -369,3 +369,186 @@ Changes with no gain so far, on new games: longer fireball prediction (96.3% v 9
 ## 2-1 reaches 97%, and the native runner (2026-11-03)
 
 2-1 cleared 97.03% and 97.07% on two separate fresh exams of 10,000 games (`fx1`, `fx2`). The settings, the evidence for each, the learnings and the unsolved problems are summarised in `PLAYBOOK.md` under "2-1: where it stands". The native runner (dkx through `native/dkh`, 5.1x faster than MAME, identical games) is described there under "Native runner".
+
+## The barrel boards from level 2 to 5 (2026-11-06 to 11-13)
+
+The full log, test by test, is in `PLAYBOOK.md`. This is what it adds up to.
+
+### Facts about the game (measured)
+
+- **Wild barrels from difficulty 5 are aimed at Mario.** At each bounce a wild's sideways speed is (Mario's x − its x) / 64 px a frame. Knowing this took 5-1 from 82% to 94.6%.
+- **Kong's wild barrels leaving his hands:** 81% drift towards Mario on their first fall; 19% drop straight down at x=59; none drift away (344 measured).
+- **Landing:** a wild sits 7 frames on the girder it lands on, then sinks through it over about 11 more frames (about 18 in all).
+- **Jumps:** a straight jump lasts 42 frames. Landing 1–2 px lower (downhill) adds a frame per pixel (43–44); landing higher takes one off (41). After any landing, a fresh press 4 frames later takes him up again, on flat and sloped girders alike. Holding the button never re-jumps.
+- **Ladders:** 8 px wide, edge to edge, rails 7 px apart: ladder 91 is x=87–94, the left ladder 48–55, the middle ladder 127–134.
+- **The hammer** (from the ROM, 2026-11-14): see "The hammer, exactly" below. In short: 8 frames up, 8 down, set by a counter (0x6394) that also ends it after 512 counts; a rolling barrel is smashed 10–22 px in front with it down; a smash freezes everything about 73 frames. With the hammer, one press doesn't always turn him: he has to watch which way Mario faces (0x6207).
+- **Steering:** with the stick pointing towards a ladder, a barrel above takes it about 75% of the time; pointing away or neutral, about 20%.
+
+### What top players do (two INP recordings and a video of the highest game ever played)
+
+- **Recordings:** barra (1,178,400, WolfMAME 0.241) and player 3 (MAME 0.260) replay in sync on our MAME 0.264. DarkFaker's (0.270) doesn't. Serphentizer's 1,269,600 game was read frame by frame from video.
+- **Results:** on barrel boards from level 5, barra cleared 51 of 54 and the second player 50 of 52, both taking the top hammer almost every time.
+- **Steering is their big edge.** They're rarely right under a ladder when a barrel arrives above it (12–19% of those moments; he was at 34%). From 17–48 px on the side where a dropped barrel rolls away from them, they pull it down 81–85% of the time; he did 8%. Copying that took 5-1 from 98.0% to 98.5% and helped 3-1 and 4-1 too.
+- **Copying their single moves at particular spots mostly failed** once tested on every instance of the spot. Copying their habits worked.
+
+### What improved survival on 5-1 (each confirmed on fresh games)
+
+| Change | Effect |
+|---|---|
+| Aimed wild barrels, `wild_aim`, `kong_aim` | 82% → 94.6% |
+| Weighing every plan around ladder 91, hammer near ladders | → 95.5% |
+| Knowing where he is from his own presses (`know_self`) | → 96.2% |
+| Steering barrels down the middle ladder (Matt's picture) | → 96.7% |
+| Faster reactions on barrel boards (65 ms, `react = {4, 4}`) | 97.2% → 97.9% |
+| Pulling barrels down like the experts (`steer_pull = 8`, `pull_moving`) | +0.4–0.5 points, twice |
+| A 1-frame allowance for his own jump press (`press_lag = 1`) | +0.02 and +0.20, more counting fireballs; on 2-1 (+1.0) and 4-1 (+0.7) too |
+| Finer jump timing (`fine_waits`) | +0.2 twice; jumping deaths −22% |
+| Rules from Matt's reviewed deaths, r2 and r7 | 98.43 → 98.69%, then 98.67 → 98.76% |
+| Removing the older setup rules s1 and s3 | +0.09, +0.13 |
+
+### What didn't help (and why, where known)
+
+- **Banking exact solutions** for single deaths (1,000 out of 1,000 in their own game) lost on new games, even matched on Kong's pose and Mario's walk step: what decides them is the game's hidden random state.
+- **Every broad timing change** except finer timing made him worse: the full real jump delay (2–3 frames), slope-aware jump lengths, a quicker second jump, more or less preference for later jumps, keeping a planned jump, and a cost for standing under a live ladder. His settings sit at a local best; one change on its own usually breaks something the others compensate for.
+- **The top hammer**, copied from the experts, reached about 80% against 97% without it. The planner doesn't model the grab's slower fall or the swing, so hand-timed trips kept getting trapped.
+- **Rules found by search alone**, without a reviewer, saved their own death but didn't hold up over every instance (19 found overnight, none kept).
+
+### What limits him now (5-1)
+
+- **Fireballs** are the biggest cause (about 450 of 840 deaths in 30,000 games).
+- **Barrel deaths while jumping:** about 0.7–0.8% of games. They're nearly all last-ditch jumps after he's been trapped for a second or two, mostly by barrels coming down ladders. His planner's safe plan collapses under the risk of barrels that might take a ladder; the fatal jump is the end of that, not the cause.
+
+### Lessons about testing
+
+- **A takeover reshuffles the game's luck.** Any change of input changes the game's random numbers from then on, so from a second or two before a death his own play usually lives too. Judge a fix only at the moments where his own play still mostly dies.
+- **Compare on the same games,** and count saved against lost there.
+- **Exams vary:** two 30,000-game exams with the same settings gave 205 and 236 jumping deaths.
+- **Narrow rules are judged where they act** (Matt: you can't expect a big overall gain from a rare situation): saved against lost in the games where the rule fired, confirmed on a second fresh set.
+- **Broad changes** still need the overall figure to rise, twice.
+- **Matt's reviews have produced every rule that held up.** A reviewer's eye picks the fix that generalises; search finds one that only saves its own death.
+- **Check what a setting actually touches before testing it:** `kong_straight` acted before Kong's release, but #4's problem was just after it, so the test showed nothing.
+- **Run names:** a batch name that already exists silently reuses the old run. Setting names: `pull_walk` already existed as a number, so the new switch broke games until it was renamed `pull_moving`.
+- **Wait on result counts, not process names,** and don't edit a script that's already running.
+
+## The all-knowing mode, and what it taught (2026-11-14 to 11-15)
+
+Matt asked what a player who could see things no human can would do. The answers, and what they did and didn't teach the human-limited player. The test-by-test log is in `PLAYBOOK.md`.
+
+### Facts from the ROM
+
+- **When a barrel takes a ladder** (0x2186): before the oil drum is lit, always. Otherwise only if Mario is below that ladder; then if the random number's two low bits are under (difficulty / 2 + 1), it goes down when Mario is at the ladder's x or his stick points towards it, else 1 time in 4. Difficulty (0x6380) is 5 throughout 5-1, so: 3 in 4 with the stick towards the ladder, 3 in 16 without.
+- **The random number can't be predicted on its own.** Each frame 0x6018 += the frame counter (0x601A) + 0x6019, and 0x6019 counts up in the idle loop while the CPU waits for the next frame, so it depends on how busy each frame was. Different presses reshuffle it from the next frame. Presses that change nothing on screen (down or up away from ladders, presses in mid-air) don't change it at all: the dice follow what the game processes.
+- **Hit boxes** (0x2913): two objects touch if |dx| < w1 + w2 and |dy| + 1 < h1 + h2. Mario (4, 7) (the planner's check is exactly this), barrels (2, 2). Each frame Mario's own check comes first, then the hammer's.
+
+### The hammer, exactly
+
+- **Boxes:** up (6, 3) at Mario's x, 16 px above him; down (5, 6) 16 px in front at his height. So a rolling barrel is smashed 10–22 px in front with it down, or just over his head with it up. Only the first barrel in the box is smashed each frame.
+- **Swing:** 0x6394 counts each frame he holds it; down when bit 3 of (counter − 1) is set (716 of 716 frames checked). It ends after 512 counts (0x6395 reaching 2), and the counter stops during a smash's pause (about 73 frames, everything frozen), which is why it seemed to last 800–1,000 frames.
+- **The grab:** checked once a jump, at frame 19 (its peak): Mario's (4, 8) box against the hammer's (3, 9) at (36, 100), so he must be at x=30–42 then. A straight grab jump is otherwise normal (lands at 42). The swing starts 4 frames after landing; until then the hammer is held up.
+- **Planned hammer (`ham_plan`, `ham_grab`):** the planner knows all of this, including fireball smashes and when it runs out (Matt: a fireball below is a threat then). It halved the deaths while holding it (217 → 108 in 1,000 games) but reached only 70% against 98% without: most deaths are at the girder's edge, on the way to it or just after. Off.
+
+### Looking ahead (`SEARCH=1`, a separate record)
+
+- He only presses press lists a copy of the game has played out and survived, 120 frames ahead, as a chain of short moves (walk, stand, climb, jumps played to landing), grown each frame from its end with backtracking. The game has no randomness of its own, so that's exact.
+- **Every barrel board, 100% including fireballs:** 5-1 10,000 / 10,000, 2-1, 3-1 and 4-1 10,000 / 10,000 each, 1-1 1,388 / 1,388. 40 random games' inputs replayed with no look-ahead: all clear. About 1,000 emulated frames a game.
+- **Handed his deaths before they happen** (all 285 of a 10,000-game run): from 100 frames before, 285 / 285 escape; 80: 284; 50: 269; 40: 233; 30: 159; 12: 97. Most deaths are decided in the last half-second or so.
+
+### The oracle review of his deaths (`tools/oracle_review.py`, `oracle_why.py`)
+
+- **What killed him**, at the last moment it could be escaped (130 barrel deaths): rolled exactly as he predicted 56; came down a ladder he had as a "maybe" 31; he was already in the air 20; wild 16; a ladder he never thought it could take 6.
+- **Dice-proof answers:** with new dice set at that moment (0x6018 reset, the board unchanged), 49 deaths had a move that clears 85%+ (1,035 / 1,100 against his own 268 / 1,100). Usually tiny: a 4-frame step, then a jump when the barrel comes.
+- **Why he missed them:** his planner predicted a hit for 23 (15 of them because his plans can only "step, then keep walking"), a rule or shortcut decided 10, safe but preferred another 9, safe but risky 7.
+- **Didn't transfer:** adding "step, then stand" and "step, pause, jump" plans made him worse everywhere (98.60 → 97.92%) and did nothing as a last resort; weighing "maybe" barrels by the game's real odds was neutral (16 / 16); retuning his main settings on 1,500 tight ordinary moments found nothing better (his settings are at their best). Like the scenario rules, what's right at the moment of death doesn't carry to his ordinary play.
+- **So 5-1 is near its human-limited ceiling:** even finding every dice-proof answer would take it from about 98.7% to about 99.1%.
+
+### Also tried, and rejected (5-1)
+
+- **Contingent planning** (plan for a "maybe" barrel with a way out): 93.4% at first, 98.1–98.2% with extra reaction margins, never above 98.65%.
+- **A danger table learned from his own games:** it spots trouble earlier than his planner (AUC 0.88 against 0.75), but as a cost in his planning it was neutral twice.
+- **Matt's confirmed fixes as tight position rules,** even gated to moments when his planner was struggling: 7 saved / 151 lost.
+
+### 3-1 and 4-1 (2026-11-15, each confirmed on two fresh 10,000-game sets)
+
+| Change | Effect |
+|---|---|
+| 3-1: 5-1's press timing, finer jump timing, hammer facing and w_with 30 | 95.16 → 95.83%, 95.23 → 95.90% |
+| 4-1: w_with 30 | 95.13 → 95.22%, 95.56 → 95.76% |
+| 4-1: finer jump timing (rejected) | 95.13 → 94.20% (its 5th-girder deaths 166 → 299) |
+
+## The rivet board, 1-2 (2026-11-15 to 11-19)
+
+From 0% to about 86.7% in five days (`cv2` 8,666 and `cvf` 8,690 of 10,000 new games). The day-by-day log is in PLAYBOOK.md, "Rivets, 1-2".
+
+### Facts about the board (measured)
+
+- **Layout:** Mario's girder y 240, 200, 160, 120, 80 (girders 1-5), Kong on top. Rivet columns x 72-79 and 176-183 on girders 2-5. A rivet comes out at its middle (x 76 walking right, 74 left); walking into a pulled gap is fatal; gaps can be jumped. Rivets left: 0x6290.
+- **Kong** stands on the top girder's middle: touching him kills (Mario's x 103-151 there). He splits that girder in two.
+- **Bonus timer** 0x62B1 (hundreds), one tick ~137 frames; it runs out ~6,400 frames into the board.
+- **Difficulty** (0x6380) steps up every 2,040 frames on the board (34 s): 1, 2, 3 at frames 0, 2,040, 4,080. Fireballs get faster with it: on girders right 0.43 / 0.53 / 0.58, left 0.36 / 0.46 / 0.48 px a frame (pauses included); coming down ladders roughly triples by difficulty 3.
+- **Mario's jump** only gets ~9 px off the girder, and a fireball still touches him there: jumping a fireball is a gamble (Matt's rule: only when it's life or death; a planned version lost 25%). A jump must be held 3 frames or the game often misses it (the 1-frame bug cost 129 of 198 "in the air" deaths before it was fixed).
+
+### How the fireballs behave (measured in his own games)
+
+- **Spawns:** one every 256 frames while fewer than 5 are out; always at the end of a girder (girders 1-4: right x 208-232, left x 16-40), **on the side opposite Mario** (the line is exactly x 128).
+- **The maze:** a fireball never crosses a pulled rivet's gap. They walk through rivets that are still in.
+- **Ladders:** a ladder going up is taken on 16% of visits, whatever Mario does; **a ladder going down only when Mario is below** (22% of visits then, never otherwise; Matt's rule).
+- **Turning:** a fireball turns round on a girder ~12% per 8 frames; **it turns towards Mario's side 66% of the time with him on its girder, 74% with him below, 52% above**: they can be steered (Matt: "he has a better awareness of the fireballs and is able to manipulate them").
+- **Freezes (Matt):** with a hammer out, a smash freezes the whole game for a moment (15% of hammer time). Apart from that, **only the 2nd and 4th fireballs (slots 1 and 3) stop of their own accord:** a long freeze of ~336 frames, almost always at the top of a ladder going down and only from difficulty 3, and shorter stops elsewhere in whole steps of ~56 frames (56, 112, 168, 224; 336 = 6 x 56). Fireballs 1, 3 and 5 never stop on their own.
+- **The hammer** doesn't make them flee: apart from the smash freezes they move the same with or without it.
+
+### How the experts play it (barra and player 3's recordings; the WR video; a second world-class video)
+
+- **The star order:** 2L, 4L, 5L, bottom hammer, 3L, 3R, 2R, middle hammer (unless the right is clear), 4R, 5R; crossing directions 2L left, 4L right, 5L left, 3L right, 3R right. Their left-side pace matches ours.
+- **After 2R:** right side free (by our zone test), they skip the middle hammer 6 / 6; busy, they take it 30 / 37.
+- **With the middle hammer** (second video, every board): they leave 4R in and stand on girder 4 just left of it facing right, smashing what comes up the right-hand ladders through the 4R spot (each respawns on the left, trapped); 4R comes out only as the hammer runs out. (Our fixed-spot version lost in five variants: they move along girder 4 to meet each one.)
+- **The safe room:** once 3L and 3R are out, girder 3's middle is cut off at both ends; they wait there to time the move up.
+- **The last two rivets** take them 20-50 s more: points leeching off Kong, not needed for clearing.
+
+### What improved clearing (each confirmed on fresh games)
+
+| Change | Gain |
+|---|---|
+| Matt's crossing directions, the hammers, gap jumps, fireball headings | 0 → ~42% |
+| Less caution (fireball allowance 4 px, look-ahead 36 frames) | → 57.7% |
+| Jumps held 3 frames (`riv_jump_hold`) | 63 → 68% |
+| Whole-board safety map (`riv_safe_w`, Matt: "think about the whole board") | → 72.6% |
+| Forgetting a stale crossing direction (stuck at 2R until the timer ran out) | → 80.6% |
+| Kong as a wall (`riv_kong`) | → 82.1% |
+| Never walk to a ladder a fireball is on, no hesitating on ladders (`riv_ladder_busy`, `riv_ladder_commit`; Matt) | +~1% |
+| Free pass up the right when the right is clear, only from the right side (`riv_free_zone`, `riv_free_where`; Matt) | +~1% |
+| Imagined futures as a tie-break, tighter allowance on the right half (`riv_mc`, `riv_right`) | +1.2% |
+| No straight jump at a fireball coming up the ladder below (`riv_lod_dy`; Matt) | +0.2% |
+| Two-step planner by the imagined futures (`riv_plan2`) | +0.5% |
+| **Middle hammer or rivets by playing both routes forward** (`riv_choice_mc`) | +0.8% |
+| **The way down to 2R by playing both ways forward** (`riv_down_mc`) | +1.5% |
+| The way up after 2R through the middle as well (`riv_choice_via` "mid") | +0.4% |
+
+The pattern since the 18th: **the simulator comparing two sensible whole routes at a known decision point wins; hand rules and tuning no longer do.**
+
+### What didn't help (and why, where known)
+
+- Hammer hunting; leaving 2R for later; committing to moves; pull-and-jump-back (lost even after its bugs were fixed).
+- Stay right after the left sweep, the spawn clock: changes ~1 game in 100.
+- Waiting before the right half in any form (at the left hammer, by Kong, Matt's points play): more fireballs spawn meanwhile and the right half comes later and harder (clears 1.5-3 s slower, more timer deaths).
+- Looking further ahead (worst case or along headings): he hesitates on ladders. Three-step planner: no better than two.
+- Gap jumps free in his routes: -5% (a jump commits him ~46 frames; fireballs still reach him in the air).
+- Hurry mode with the timer low (any form): the late timer games are stuck behind a fireball; risk only swaps timer deaths for fireball deaths.
+- The learnt danger table: it measures "danger given how he then played it", which doesn't transfer to other choices.
+- The general route choice (13 detours at any moment): -8%; the best of many noisy estimates looks good by luck, and detours cost time.
+- Hammer farming at a fixed spot: lost in five variants (best -0.5%).
+- The pull towards Mario in the simulator: real, but a fixed course can't capture the fireballs reacting to where he really goes; calibration got worse.
+
+### Lessons about testing (rivets)
+
+- Any change reshuffles ~25% of games either way: 1,000-game tests can't see a 1% change. Rivet tests are 10,000 games on the same games as a reference with the same defaults, and a fresh 10,000-game check before adopting (Matt).
+- Test a change where it acts (scenario replays with new dice, `rivet_scen.py`), then at scale.
+- A rule from Matt's review that loses was applied too widely or never fired: check where it fired (the free pass: fired in 808 of 3,000 games, from the wrong side; the under-ladder rule: three narrowings).
+- Practical: each run copies `lua/` when it starts; `--set` takes a Lua value (text needs quotes); check a run name is free first; queue scripts must not wait with `pgrep -f` on text in their own command line.
+
+### Later results (2026-11-20 to 11-21)
+
+- **On since:** the 2nd / 4th fireballs' freezes held still (`riv_freeze`, `riv_freeze_short`, +0.2%); hopping right from girder 2's middle as one of the hammer choice's plans (`riv_choice_hop`, +0.4%, Matt). **Now ~87.2%** (`hp1`, 8,722 / 10,000).
+- **Freezes corrected (Matt):** every other stop is a smash freeze; only the 2nd and 4th stop on their own (long ~336 frames at ladder tops from difficulty 3; shorter ones in ~56-frame steps).
+- **Matt's five outside-the-box options, none won:** (1) no hammer parking to beat the clock -3.5%; (2) learning the best choice from 18,000 replays of ordinary moments: one pattern, -1.5% at scale; (3) an all-knowing rivet search as a teacher: never matched the player (23/64 vs 55/64); (4) the rivet order by the simulator -5%; (5) smash only on the right -0.5%. Also: simulator settings, the last-rivets "go round" choice (-5%), hop cost by landing (even).
+- **The pattern:** changing the plan itself loses; gains come from Matt's observations and from the simulator choosing between two ways to do the same next step. Full handover: RIVETS_HANDOFF.md.
+
